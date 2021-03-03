@@ -315,7 +315,7 @@ freq_mom
 ```
 
 ```{r}
-#Merging the perentedu with the dependent variable inedu
+#Merging the parentedu with the dependent variable inedu
 
 parent_inedu_raw <- merge(data01, parent_edu2010, by= "id", all.x = TRUE)
 #Sample size 10.313
@@ -357,13 +357,21 @@ freq_mom2
 ```{r}
 #Independent variable: househol (income)
 
-#Subsetting the data2010 to get variables of interest 
+#Subsetting the data2010 to get variables of interest ocupation and income
 
-income2010_raw <- subset(data2010, select = c ("id","orden", "ocupacion", "vr_salario"))
+income2010_raw <- subset(data2010, select = c ("id","orden","ocupacion", "vr_salario"))
 #Sample 22.178
 
+#Subsetting the data to the members 1 and 2 of the household (leader and partner)
 subset_income1 <- subset(income2010_raw, orden == 1 & 2)
-x <- income2010_raw["orden"]
+#Sample 5.275
+
+#Eliminating the NA´s in de income variable
+subset_income2 <- subset(subset_income1, !is.na(vr_salario))
+#Sample 2.210
+
+income2010 <- subset_income2
+
 summary(income2010_raw$orden)
 
 #Sample 3.160
@@ -373,16 +381,21 @@ summary(income2010$ocupacion)
 
 parent_income1 <- merge(wave1, income2010, by= "id", all.x = TRUE)
 
+subset_parent <- subset(parent_income1, !is.na(vr_salario))
+
 ```
 
 ```{r}
-#Income
+#Merging the household variable with the dependent variable inedu
 
+parent_income1 <- merge(wave1, income2010, by= "id", all.x = TRUE)
+
+subset_parent <- subset(parent_income1, !is.na(vr_salario))
 
 ```
 
 
-
+ 
 
 
 
