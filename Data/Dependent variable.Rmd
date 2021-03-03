@@ -40,13 +40,13 @@ data2016_raw <- read_dta("peopleu2016.dta") #Sample size 19.298
 #Renaming the variables
 
 data2010 <- data2010_raw %>%
-  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo)
+  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, income = vr_salario)
 
 data2013 <- data2013_raw %>% 
-   rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar)
+   rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario)
 
 data2016 <- data2016_raw %>%
-  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar)
+  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario)
 
 #Recoding variable wave
 
@@ -61,7 +61,7 @@ data2013$inedu[data2013$inedu == 2] <- 0
 data2016$inedu[data2016$inedu == 2] <- 0
 
 
-#Recoding varible edu_mom and edu_dad
+#Recoding variable edu_mom and edu_dad
 
 data2010$educ_dad <- factor(data2010$educ_dad,
                             levels = c(1,2,3,4,5,6,7,8,9,98,99),
@@ -144,7 +144,25 @@ data2016$educ_mom <- factor(data2016$educ_mom,
                                        "None",
                                        "Does not know",
                                        "No info"))
+#Recoding variable income
+
+data2010$income[data2010$income < 877803] <- 1
+data2010$income[data2010$income >= 877803] <- 2
+data2010$income[data2010$income < 877803] <- 2
+data2010$income[data2010$income >= 1755606] <- 3
+data2010$income[data2010$income < 2633409]  <- 3            
+data2010$income[data2010$income > 2633409]  <- 4                
+     
+data2010$income<- factor(data2010$income,
+                            levels = c(1,2,3,4),
+                            labels = c("Less than the 1 minimum wage", 
+                                       "From 1 to less than 2 minimum wages",
+                                       "From 2 to less than 3 minimum wages",
+                                       "More than 3 minimum wages"))
+
+
 ```
+
 
 
 ```{r}
@@ -257,7 +275,7 @@ dependentv_table
 ```{r}
 #Running pglm model with inedu and age 
 
-model <- pglm(inedu ~ age + gender, model = "pooling", family = binomial("probit"), data = dependentv)
+model <- pglm(inedu ~ age, model = "pooling", family = binomial("probit"), data = dependentv)
 
 summary(model)
 
@@ -359,7 +377,7 @@ freq_mom2
 
 #Subsetting the data2010 to get variables of interest ocupation and income
 
-income2010_raw <- subset(data2010, select = c ("id","orden","ocupacion", "vr_salario"))
+income2010_raw <- subset(data2010, select = c ("id","orden","ocupacion", "income"))
 #Sample 22.178
 
 #Subsetting the data to the members 1 and 2 of the household (leader and partner)
@@ -367,30 +385,36 @@ subset_income1 <- subset(income2010_raw, orden == 1 & 2)
 #Sample 5.275
 
 #Eliminating the NA´s in de income variable
-subset_income2 <- subset(subset_income1, !is.na(vr_salario))
+subset_income2 <- subset(subset_income1, !is.na(income))
 #Sample 2.210
 
 income2010 <- subset_income2
-
-summary(income2010_raw$orden)
-
-#Sample 3.160
+#2.210
 
 summary(income2010$vr_salario)
 summary(income2010$ocupacion)
 
-parent_income1 <- merge(wave1, income2010, by= "id", all.x = TRUE)
+```
 
-subset_parent <- subset(parent_income1, !is.na(vr_salario))
+```{r}
+
+freq_income <- income2010 %>% 
+  count(income) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  kable(caption = "Percentage of observations by category in income variable", 
+        align = "c") %>% kable_styling(full_width = F)
+
+freq_income
 
 ```
+
 
 ```{r}
 #Merging the household variable with the dependent variable inedu
 
 parent_income1 <- merge(wave1, income2010, by= "id", all.x = TRUE)
 
-subset_parent <- subset(parent_income1, !is.na(vr_salario))
+subset_parent <- subset(parent_income1, !is.na(income))
 
 ```
 

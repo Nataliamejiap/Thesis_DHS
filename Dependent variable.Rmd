@@ -1,15 +1,34 @@
 ---
-title: "Experiment"
+title: "Dependent variable"
 author: "Natalia Mejia"
-date: "3/3/2021"
-output: html_document
+date: "23/2/2021"
+output:
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Experiment with other variables
+```{r}
+#Required packages
+
+library(dplyr)
+library(haven)
+library(xtable)
+library(plm)
+library(pglm)
+library(broom)
+library(knitr) 
+library(tidyverse)
+library(tidyr)
+library(haven)
+library(stargazer)
+library(kableExtra)
+library(knitr)
+library(expss)
+
+```
 
 ```{r}
 #Getting the datasets
@@ -125,117 +144,207 @@ data2016$educ_mom <- factor(data2016$educ_mom,
                                        "None",
                                        "Does not know",
                                        "No info"))
-#Recoding drop_edu
-
-data2013$drop_edu[data2013$drop_edu == 2] <- 0
-data2016$drop_edu[data2016$drop_edu == 2] <- 0
-
 ```
 
 
+```{r}
+#Dataset wave 1
+
+#Select the variables of interest 
+subset1_w1 <- subset(data2010, select = c("id", "wave", "age","inedu"))
+#Sample size 22.179
+
+#Drop all NA´s from ID variable
+subset2_w1 <- subset(subset1_w1, !is.na(id))
+#Sample size 22.179
+
+#Select only the subjects that are studying at the moment of the survey(baseline)
+subset3_w1 <- subset(subset2_w1, inedu == 1)
+#Sample size 2.574
+
+wave1 <- subset3_w1 #Sample size wave1 2.547
+summary(wave1$age)
+
+```
 
 ```{r}
-#Dejo_estudiar variable
-
 #Dataset wave 2
 
 #Select variables of interest
-subset1_w2.2 <- subset(data2013, select = c("id","wave", "age", "drop_edu"))
+subset1_w2 <- subset(data2013, select = c("id","wave", "age",
+                                          "inedu"))
+#Sample size 20.547
+
+#Drop all NA´s from ID variable
+subset2_w2 <- subset(subset1_w2, !is.na(id))
 #Sample size 17.064
 
-#Drop all NA´s from ID variable 
-subset2_w2.2 <- subset(subset1_w2.2, !is.na(id))
-#Sample size 17.064
+wave2 <- subset2_w2 #Sample size wave2 17.064
 
-wave2.2 <- subset2_w2.2 #Sample size wave2 17.064
-
-table(wave2.2$drop_edu) #13.732 NA´s from dejo_estudiar
-
+table(wave2$inedu)
+table(wave2$age)
 ```
 
 ```{r}
 #Dataset wave 3
 
 #Select variables of interest
-subset1_w3.3 <- subset(data2016, select = c("id", "wave", "age", "drop_edu"))
+subset1_w3 <- subset(data2016, select = c("id", "wave", "age", "inedu"))
 #Sample size 19.298
 
-subset2_w3.3 <- subset(subset1_w3.3, !is.na(id))
+subset2_w3 <- subset(subset1_w3, !is.na(id))
 #Sample size 14.944
 
-wave3.3 <- subset2_w3.3 #Sample size wave3 14.944
+wave3 <- subset2_w3 #Sample size wave3 14.944
+table(wave3$inedu)
+summary(wave3$age)
 
-table(wave3.3$drop_edu) #11.547 NA´s from dejo_estudiar
 ```
 
 
 ```{r}
 #Append the datasets
 
-data2010_2016.1 <- rbind(wave2.2, wave3.3) #Sample size 32.008
+data2010_2016 <- rbind(wave1, wave2, wave3) #Sample size 34.555
 
-#Drop all NA´s from dejo_estudiar
-subset1.1 <- subset(data2010_2016.1, !is.na(drop_edu))
-#Sample size 6.729
+#Drop all NA´s from inedu variable
+subset1 <- subset(data2010_2016, !is.na(inedu))
+#Sample size 32.800
 
 #Subset the data to ages between 6 and 17(compulsory education in Colombia)
-subset2.2 <- subset(subset1.1, age >= 6 & age <= 17)
-#Sample size 6.264
+subset2 <- subset(subset1, age >= 6 & age <= 17)
+#Sample size 10.313
 
-data01.1 <- subset2.2
-#Sample size data01.1 6.264
+data01 <- subset2
+#Sample size data01 10.313
 
-table(data01.1$drop_edu)
-summary(data2010_2016.1$drop_edu)
+summary(data2010_2016$inedu)
 ```
 
 ```{r}
 #Shape the dataset as panel data for the dependent variable inedu
 
-dependentv.1 <- pdata.frame(data01.1, index=c("id","wave"), drop.index=TRUE, row.names=TRUE)
+dependentv <- pdata.frame(data01, index=c("id","wave"), drop.index=TRUE, row.names=TRUE)
+
 ```
 
 ```{r}
-freq_drop_edu <- dependentv.1 %>% 
-  count(drop_edu) %>%
+#Frequency tables for the dependent variable inedu
+
+freq_depv <- dependentv %>% 
+  count(inedu) %>%
   mutate("Percentage" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by case in drop_edu variable", 
+  kable(caption = "Percentage of observations by case in inedu variable", 
         align = "c") %>% kable_styling(full_width = F)
 
-freq_drop_edu
-```
-
-```{r}
-#Merging the parentedu with the dependent variable drop_edu
-
-parent_dropedu_raw <- merge(data01.1, parent_edu2010, by= "id", all.x = TRUE)
-#Sample size 6.264
-
-subset_dropedu <- subset(parent_dropedu_raw, !is.na(educ_mom))
-#Sample 232
-
-parent_dropedu <- subset_dropedu
-#Sample 232
+freq_depv
 
 ```
 
-```{r}
-#Distribution of variable educ_dad analytical sample depv drop_edu
 
-freq_dad2 <- parent_dropedu %>% 
+```{r}
+
+dependentv_table <- table(dependentv) %>%
+  kable(caption = "Distribution of variable inedu by age",
+        col.names = c("Inedu = 0", "Inedu = 1"),
+        align = "c") %>% 
+   kable_minimal()
+
+dependentv_table
+
+```
+
+```{r}
+#Running pglm model with inedu and age 
+
+model <- pglm(inedu ~ age, model = "pooling", family = binomial("probit"), data = dependentv)
+
+summary(model)
+
+```
+```{r}
+#Independent variable: parents education
+
+#Subsetting the data2010 to get variables of interest 
+
+parent_educ <- subset(data2010, select = c ("id","educ_dad", "educ_mom")) 
+#Sample size 22.179
+
+#Removing NAs from the parent education variables
+
+subset1_parent <- subset(parent_educ, !is.na(educ_dad))
+#Sample size 15.510
+
+subset2_parent <- subset(subset1_parent, !is.na(educ_mom))
+#10.648
+
+subset3_parent <- subset(subset2_parent, educ_dad != "No info")
+#Sample size 10.512
+
+subset4_parent <- subset(subset3_parent, educ_mom != "No info")
+#Sample size 10.500
+
+parent_edu2010 <- subset4_parent #10.500
+
+summary(parent_educ$educ_mom)
+summary(parent_educ$educ_dad)
+
+```
+
+```{r}
+
+freq_dad <- parent_edu2010 %>% 
+  count(educ_dad) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  kable(caption = "Percentage of observations by case in educ_dad variable", 
+        align = "c") %>% kable_styling(full_width = F)
+
+freq_dad
+
+```
+
+```{r}
+freq_mom <- parent_edu2010 %>% 
+  count(educ_mom) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  kable(caption = "Percentage of observations by case in educ_mom variable", 
+        align = "c") %>% kable_styling(full_width = F)
+
+freq_mom
+
+```
+
+```{r}
+#Merging the parentedu with the dependent variable inedu
+
+parent_inedu_raw <- merge(data01, parent_edu2010, by= "id", all.x = TRUE)
+#Sample size 10.313
+
+subset_inedu <- subset(parent_inedu_raw, !is.na(educ_mom))
+#Sample 511
+
+parent_inedu <- subset_inedu
+#Sample 511
+
+```
+
+
+```{r}
+#Distribution of variable educ_dad analytical sample depv inedu
+
+freq_dad2 <- parent_inedu %>% 
   count(educ_dad) %>%
   mutate("%" = n / sum(n) *100) %>%
   kable(caption = "Percentage of observations by case in educ_dad variable", 
         align = "c") %>% kable_styling(full_width = F)
 
 freq_dad2
-
 ```
 
 ```{r}
-#Distribution of variable educ_mom analytical sample depv drop_edu
+#Distribution of variable mom_educ analytical sample depv inedu
 
-freq_mom2 <- parent_dropedu %>% 
+freq_mom2 <- parent_inedu %>% 
   count(educ_mom) %>%
   mutate("%" = n / sum(n) *100) %>%
   kable(caption = "Percentage of observations by case in educ_mom variable", 
@@ -246,10 +355,53 @@ freq_mom2
 ```
 
 ```{r}
-#Income
+#Independent variable: household (income)
 
+#Subsetting the data2010 to get variables of interest ocupation and income
 
+income2010_raw <- subset(data2010, select = c ("id","orden","ocupacion", "vr_salario"))
+#Sample 22.178
 
+#Subsetting the data to the members 1 and 2 of the household (leader and partner)
+subset_income1 <- subset(income2010_raw, orden == 1 & 2)
+#Sample 5.275
+
+#Eliminating the NA´s in de income variable
+subset_income2 <- subset(subset_income1, !is.na(vr_salario))
+#Sample 2.210
+
+income2010 <- subset_income2
+
+summary(income2010_raw$orden)
+
+#Sample 3.160
+
+summary(income2010$vr_salario)
+summary(income2010$ocupacion)
+
+parent_income1 <- merge(wave1, income2010, by= "id", all.x = TRUE)
+
+subset_parent <- subset(parent_income1, !is.na(vr_salario))
 
 ```
+
+```{r}
+#Merging the household variable with the dependent variable inedu
+
+parent_income1 <- merge(wave1, income2010, by= "id", all.x = TRUE)
+
+subset_parent <- subset(parent_income1, !is.na(vr_salario))
+
+```
+
+
+ 
+
+
+
+
+
+
+
+
 
