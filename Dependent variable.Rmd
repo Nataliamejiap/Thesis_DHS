@@ -257,7 +257,7 @@ dependentv_table
 ```{r}
 #Running pglm model with inedu and age 
 
-model <- pglm(inedu ~ age + gender, model = "pooling", family = binomial("probit"), data = dependentv)
+model <- pglm(inedu ~ age, model = "pooling", family = binomial("probit"), data = dependentv)
 
 summary(model)
 
@@ -355,7 +355,7 @@ freq_mom2
 ```
 
 ```{r}
-#Independent variable: househol (income)
+#Independent variable: household (income)
 
 #Subsetting the data2010 to get variables of interest ocupation and income
 

@@ -1,0 +1,42 @@
+#Packages
+install.packages("dplyr")
+library(dplyr)
+
+#FAKE Data Sets
+WAVE1   <- data.frame(ID=1,AGE=6,WAVE=2010,INEDU=0)
+WAVE2   <- data.frame(ID=1,AGE=9,WAVE=2013,INEDU=0)
+WAVE3   <- data.frame(ID=1,AGE=12,WAVE=2016,INEDU=1)
+
+#Append the Data
+DATA01 = rbind(WAVE1, WAVE2,WAVE3)
+
+#Lags and Leads
+DATA01$INEDU_L <- lead(DATA01$INEDU,1,by="ID")
+DATA01$AGE_L   <- lead(DATA01$AGE,1,by="ID")
+DATA01$AGE_LA <- lag(DATA01$AGE,1,by="ID")
+DATA01$AGE_L[is.na(DATA01$AGE_L)] <- 0
+DATA01$AGE_LA[is.na(DATA01$AGE_LA)] <- 0
+DATA01$INEDU_L[is.na(DATA01$INEDU_L)] <- 0
+
+# total spells _N in STATA
+DATA01$SPELL <- ave(DATA01$WAVE,                
+                    DATA01$ID,
+                       FUN = seq_along)
+#Create: EVENT
+DATA01$EVENT   <- DATA01$INEDU
+
+#Create: BEGIN 
+DATA01$BEGIN   <- DATA01$AGE_LA 
+DATA01$BEGIN[DATA01$SPELL==1]   <- 0 
+
+#Create: END
+DATA01$TEST     <-((DATA01$AGE_LA+DATA01$AGE)/2) 
+DATA01$END     <- DATA01$AGE
+DATA01$END[DATA01$EVENT==1]<-DATA01$TEST[DATA01$EVENT==1] 
+
+
+#DROP ALL SPELLS AFTER EVENT OCCURRED
+NEEDS TO BE COMPLETED
+
+#DROP ALL PERIODS AFTER GRADUATION(CENSORING) 
+NEEDS TO BE COMPLETED
