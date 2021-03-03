@@ -245,3 +245,12 @@ freq_mom2
 
 ```
 
+```{r}
+#Income
+
+bla bla 
+
+
+
+```
+
