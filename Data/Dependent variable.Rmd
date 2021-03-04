@@ -33,20 +33,22 @@ library(expss)
 ```{r}
 #Getting the datasets
 
-data2010_raw <- read_dta("peopleu.dta") #Sample size 22.179 observations
-data2013_raw <- read_dta("peopleu2013.dta") #Sample size 20.574 observations
-data2016_raw <- read_dta("peopleu2016.dta") #Sample size 19.298
+data2010_raw <- read_dta("peopleu.dta") #Sample size 22,179 observations
+data2013_raw <- read_dta("peopleu2013.dta") #Sample size 20,574 observations
+data2016_raw <- read_dta("peopleu2016.dta") #Sample size 19,298
+
+hist(data2010_raw$vr_ganancia)
 
 #Renaming the variables
 
 data2010 <- data2010_raw %>%
-  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, income = vr_salario)
+  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, income = vr_salario, ocupation = ocupacion)
 
 data2013 <- data2013_raw %>% 
-   rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario)
+   rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario, ocupation = ocupacion)
 
 data2016 <- data2016_raw %>%
-  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario)
+  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario, ocupation = ocupacion)
 
 #Recoding variable wave
 
@@ -155,12 +157,27 @@ data2010$income[data2010$income > 2633409]  <- 4
      
 data2010$income<- factor(data2010$income,
                             levels = c(1,2,3,4),
-                            labels = c("Less than the 1 minimum wage", 
+                            labels = c("Less than 1 minimum wage", 
                                        "From 1 to less than 2 minimum wages",
                                        "From 2 to less than 3 minimum wages",
                                        "More than 3 minimum wages"))
 
+#Recoding variable ocupation
 
+data2010$ocupation <- factor(data2010$ocupation,
+                            levels = c(1,2,3,4,5,6,7,8,9,10,11),
+                            labels = c("Salaried employee of a private company with indefinite-term contract",
+                                       "Salaried employee of a private company with fixed-term contract",
+                                       "Government employee with indefinite-term contract",
+                                       "Government employee with fixed-term contract",
+                                       "Laborer or day laborer",
+                                       "Domestic worker",
+                                       "Independent worker",
+                                       "Employer",
+                                       "Worker on own farm",
+                                       "Unpaid family worker without",
+                                       "Other"))  
+                             
 ```
 
 
@@ -170,17 +187,14 @@ data2010$income<- factor(data2010$income,
 
 #Select the variables of interest 
 subset1_w1 <- subset(data2010, select = c("id", "wave", "age","inedu"))
-#Sample size 22.179
+#Sample size 22,179
 
 #Drop all NA´s from ID variable
 subset2_w1 <- subset(subset1_w1, !is.na(id))
-#Sample size 22.179
+#Sample size 22,179
 
-#Select only the subjects that are studying at the moment of the survey(baseline)
-subset3_w1 <- subset(subset2_w1, inedu == 1)
-#Sample size 2.574
+wave1 <- subset2_w1 #Sample size wave1 22.179
 
-wave1 <- subset3_w1 #Sample size wave1 2.547
 summary(wave1$age)
 
 ```
@@ -191,13 +205,13 @@ summary(wave1$age)
 #Select variables of interest
 subset1_w2 <- subset(data2013, select = c("id","wave", "age",
                                           "inedu"))
-#Sample size 20.547
+#Sample size 20,547
 
 #Drop all NA´s from ID variable
 subset2_w2 <- subset(subset1_w2, !is.na(id))
-#Sample size 17.064
+#Sample size 17,064
 
-wave2 <- subset2_w2 #Sample size wave2 17.064
+wave2 <- subset2_w2 #Sample size wave2 17,064
 
 table(wave2$inedu)
 table(wave2$age)
@@ -208,10 +222,10 @@ table(wave2$age)
 
 #Select variables of interest
 subset1_w3 <- subset(data2016, select = c("id", "wave", "age", "inedu"))
-#Sample size 19.298
+#Sample size 19,298
 
 subset2_w3 <- subset(subset1_w3, !is.na(id))
-#Sample size 14.944
+#Sample size 14,944
 
 wave3 <- subset2_w3 #Sample size wave3 14.944
 table(wave3$inedu)
@@ -227,14 +241,14 @@ data2010_2016 <- rbind(wave1, wave2, wave3) #Sample size 34.555
 
 #Drop all NA´s from inedu variable
 subset1 <- subset(data2010_2016, !is.na(inedu))
-#Sample size 32.800
+#Sample size 32,800
 
 #Subset the data to ages between 6 and 17(compulsory education in Colombia)
 subset2 <- subset(subset1, age >= 6 & age <= 17)
-#Sample size 10.313
+#Sample size 10,313
 
 data01 <- subset2
-#Sample size data01 10.313
+#Sample size data01 10,313
 
 summary(data2010_2016$inedu)
 ```
@@ -242,7 +256,7 @@ summary(data2010_2016$inedu)
 ```{r}
 #Shape the dataset as panel data for the dependent variable inedu
 
-dependentv <- pdata.frame(data01, index=c("id","wave"), drop.index=TRUE, row.names=TRUE)
+dependentv <- pdata.frame(data01, index=c("id","wave"), drop.index=TRUE, row.names=TRUE) 
 
 ```
 
@@ -277,30 +291,31 @@ dependentv_table
 
 model <- pglm(inedu ~ age, model = "pooling", family = binomial("probit"), data = dependentv)
 
-summary(model)
+summary(model) 
 
 ```
+
 ```{r}
 #Independent variable: parents education
 
 #Subsetting the data2010 to get variables of interest 
 
 parent_educ <- subset(data2010, select = c ("id","educ_dad", "educ_mom")) 
-#Sample size 22.179
+#Sample size 22,179
 
 #Removing NAs from the parent education variables
 
 subset1_parent <- subset(parent_educ, !is.na(educ_dad))
-#Sample size 15.510
+#Sample size 15,510
 
 subset2_parent <- subset(subset1_parent, !is.na(educ_mom))
 #10.648
 
 subset3_parent <- subset(subset2_parent, educ_dad != "No info")
-#Sample size 10.512
+#Sample size 10,512
 
 subset4_parent <- subset(subset3_parent, educ_mom != "No info")
-#Sample size 10.500
+#Sample size 10,500
 
 parent_edu2010 <- subset4_parent #10.500
 
@@ -336,7 +351,7 @@ freq_mom
 #Merging the parentedu with the dependent variable inedu
 
 parent_inedu_raw <- merge(data01, parent_edu2010, by= "id", all.x = TRUE)
-#Sample size 10.313
+#Sample size 10,313
 
 subset_inedu <- subset(parent_inedu_raw, !is.na(educ_mom))
 #Sample 511
@@ -375,21 +390,21 @@ freq_mom2
 ```{r}
 #Independent variable: household (income)
 
-#Subsetting the data2010 to get variables of interest ocupation and income
+#Subsetting the data2010 to get variable of interest income
 
-income2010_raw <- subset(data2010, select = c ("id","orden","ocupacion", "income"))
-#Sample 22.178
+income2010_raw <- subset(data2010, select = c ("id","orden", "income"))
+#Sample 22,178
 
 #Subsetting the data to the members 1 and 2 of the household (leader and partner)
 subset_income1 <- subset(income2010_raw, orden == 1 & 2)
-#Sample 5.275
+#Sample 5,275
 
 #Eliminating the NA´s in de income variable
 subset_income2 <- subset(subset_income1, !is.na(income))
-#Sample 2.210
+#Sample 2,210
 
 income2010 <- subset_income2
-#2.210
+#2,210
 
 summary(income2010$vr_salario)
 summary(income2010$ocupacion)
@@ -410,7 +425,7 @@ freq_income
 
 
 ```{r}
-#Merging the household variable with the dependent variable inedu
+#Merging the household variable (income) with the dependent variable inedu
 
 parent_income1 <- merge(wave1, income2010, by= "id", all.x = TRUE)
 
@@ -418,9 +433,58 @@ subset_parent <- subset(parent_income1, !is.na(income))
 
 ```
 
+```{r}
+ocu2010_raw <- subset(data2010, select = c ("id","orden","ocupation"))
+#Sample 22,178
 
- 
+#Subsetting the data to the members 1 and 2 of the household (leader and partner)
+subset_ocupation <- subset(ocu2010_raw, orden == 1 & 2)
+#Sample 5,275
 
+subset_ocupation1 <- subset(subset_ocupation, !is.na(ocupation))
+#4,210
+
+ocupation2010 <- subset_ocupation1
+
+```
+
+```{r}
+
+freq_ocu <- ocupation2010 %>% 
+  count(ocupation) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  kable(caption = "Percentage of observations by category in ocupation variable", 
+        align = "c") %>% kable_styling(full_width = F)
+
+freq_ocu
+
+```
+```{r}
+#Merging the household variable (ocupation) with the dependent variable inedu
+
+parent_ocupation1 <- merge(wave1, ocupation2010, by= "id", all.x = TRUE)
+
+subset_parent <- subset(parent_ocupation1, !is.na(ocupation))
+
+```
+
+```{r}
+#Distribution of variable ocupation analytical sample depv inedu
+
+freq_mom2 <- parent_inedu %>% 
+  count(educ_mom) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  kable(caption = "Percentage of observations by case in educ_mom variable", 
+        align = "c") %>% kable_styling(full_width = F)
+
+freq_mom2
+
+```
+
+
+```{r}
+table(data01$inedu, parent_educ$educ_dad)
+```
 
 
 
