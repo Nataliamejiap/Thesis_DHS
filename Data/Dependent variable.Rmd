@@ -72,8 +72,8 @@ data2010$educ_dad <- factor(data2010$educ_dad,
                                        "Some years of secundary school",
                                        "All secondary school",
                                        "One or more years of technical educ",
-                                       "University without title",
-                                       "Univeristy with title",
+                                       "University without degree",
+                                       "Univeristy with degree",
                                        "Posgrad",
                                        "None",
                                        "Does not know",
@@ -160,7 +160,37 @@ data2010$income<- factor(data2010$income,
                             labels = c("Less than 1 minimum wage", 
                                        "From 1 to less than 2 minimum wages",
                                        "From 2 to less than 3 minimum wages",
-                                       "More than 3 minimum wages"))
+                                     "More than 3 minimum wages"))
+
+
+data2013$income[data2013$income < 877803] <- 1
+data2013$income[data2013$income >= 877803] <- 2
+data2013$income[data2013$income < 877803] <- 2
+data2013$income[data2013$income >= 1755606] <- 3
+data2013$income[data2013$income < 2633409]  <- 3            
+data2013$income[data2013$income > 2633409]  <- 4                
+     
+data2013$income<- factor(data2013$income,
+                            levels = c(1,2,3,4),
+                            labels = c("Less than 1 minimum wage", 
+                                       "From 1 to less than 2 minimum wages",
+                                       "From 2 to less than 3 minimum wages",
+                                     "More than 3 minimum wages"))
+
+data2016$income[data2016$income < 877803] <- 1
+data2016$income[data2016$income >= 877803] <- 2
+data2016$income[data2016$income < 877803] <- 2
+data2016$income[data2016$income >= 1755606] <- 3
+data2016$income[data2016$income < 2633409]  <- 3            
+data2016$income[data2016$income > 2633409]  <- 4                
+     
+data2016$income<- factor(data2016$income,
+                            levels = c(1,2,3,4),
+                            labels = c("Less than 1 minimum wage", 
+                                       "From 1 to less than 2 minimum wages",
+                                       "From 2 to less than 3 minimum wages",
+                                     "More than 3 minimum wages"))
+
 
 #Recoding variable ocupation
 
@@ -177,6 +207,20 @@ data2010$ocupation <- factor(data2010$ocupation,
                                        "Worker on own farm",
                                        "Unpaid family worker without",
                                        "Other"))  
+
+#Converting variables double as factors
+
+data2010$income <- as.factor(data2010$income)
+data2013$income <- as.factor(data2013$income)
+data2016$income <- as.factor(data2016$income)
+
+data2010$dad_house <- as.factor(data2010$dad_house)
+data2013$dad_house <- as.factor(data2013$dad_house)
+data2016$dad_house <- as.factor(data2016$dad_house)
+
+data2010$mom_house <- as.factor(data2010$mom_house)
+data2013$mom_house <- as.factor(data2013$mom_house)
+data2016$mom_house <- as.factor(data2016$mom_house)
                              
 ```
 
@@ -186,7 +230,17 @@ data2010$ocupation <- factor(data2010$ocupation,
 #Dataset wave 1
 
 #Select the variables of interest 
-subset1_w1 <- subset(data2010, select = c("id", "wave", "age","inedu"))
+subset1_w1 <- subset(data2010, select = c("id", 
+                                          "wave", 
+                                          "age",
+                                          "inedu",
+                                          "gender",
+                                           "educ_dad",
+                                     "educ_mom",
+                                     "dad_house",
+                                     "mom_house"))
+                                    
+                                     
 #Sample size 22,179
 
 #Drop all NA´s from ID variable
@@ -203,8 +257,16 @@ summary(wave1$age)
 #Dataset wave 2
 
 #Select variables of interest
-subset1_w2 <- subset(data2013, select = c("id","wave", "age",
-                                          "inedu"))
+subset1_w2 <- subset(data2013, select = c("id","wave",
+                                          "age",
+                                          "inedu",
+                                          "gender",
+                                           "educ_dad",
+                                     "educ_mom",
+                                     "dad_house",
+                                     "mom_house"))
+                                     
+                                    
 #Sample size 20,547
 
 #Drop all NA´s from ID variable
@@ -221,7 +283,17 @@ table(wave2$age)
 #Dataset wave 3
 
 #Select variables of interest
-subset1_w3 <- subset(data2016, select = c("id", "wave", "age", "inedu"))
+subset1_w3 <- subset(data2016, select = c("id", 
+                                          "wave", 
+                                          "age", 
+                                          "inedu",
+                                          "gender",
+                                           "educ_dad",
+                                     "educ_mom",
+                                     "dad_house",
+                                     "mom_house"))
+                                    
+                                     
 #Sample size 19,298
 
 subset2_w3 <- subset(subset1_w3, !is.na(id))
@@ -231,26 +303,30 @@ wave3 <- subset2_w3 #Sample size wave3 14.944
 table(wave3$inedu)
 summary(wave3$age)
 
+
+class(wave1$dad_house)
+class(wave1$educ_dad)
 ```
 
 
 ```{r}
 #Append the datasets
 
-data2010_2016 <- rbind(wave1, wave2, wave3) #Sample size 34.555
+data2010_2016 <- rbind(wave1, wave2, wave3) #Sample size 54,187
 
 #Drop all NA´s from inedu variable
 subset1 <- subset(data2010_2016, !is.na(inedu))
-#Sample size 32,800
+#Sample size 41,198
 
 #Subset the data to ages between 6 and 17(compulsory education in Colombia)
 subset2 <- subset(subset1, age >= 6 & age <= 17)
-#Sample size 10,313
+#Sample size 10,358
 
 data01 <- subset2
 #Sample size data01 10,313
 
 summary(data2010_2016$inedu)
+
 ```
 
 ```{r}
@@ -406,9 +482,39 @@ subset_income2 <- subset(subset_income1, !is.na(income))
 income2010 <- subset_income2
 #2,210
 
-summary(income2010$vr_salario)
-summary(income2010$ocupacion)
 
+income2013_raw <- subset(data2013, select = c ("id","orden", "income"))
+
+
+#Subsetting the data to the members 1 and 2 of the household (leader and partner)
+subset_income1.1 <- subset(income2013_raw, orden == 1 & 2)
+
+
+#Eliminating the NA´s in de income variable
+subset_income2.2 <- subset(subset_income1.1, !is.na(income))
+
+
+income2013 <- subset_income2.2
+
+
+income2016_raw <- subset(data2016, select = c ("id","orden", "income"))
+
+
+#Subsetting the data to the members 1 and 2 of the household (leader and partner)
+subset_income1.2 <- subset(income2016_raw, orden == 1 & 2)
+
+
+#Eliminating the NA´s in de income variable
+subset_income2.3 <- subset(subset_income1.2, !is.na(income))
+
+
+income2016 <- subset_income2.3
+
+
+income00 <- rbind(income2010, income2013, income2016)
+
+income <- income00 %>%
+  select(id, income)
 ```
 
 ```{r}
