@@ -140,7 +140,13 @@ data2016$drop_edu[data2016$drop_edu == 2] <- 0
 #Dataset wave 2
 
 #Select variables of interest
-subset1_w2.2 <- subset(data2013, select = c("id","wave", "age", "drop_edu"))
+subset1_w2.2 <- subset(data2013, select = c("id","wave", "age", 
+                                            "drop_edu", 
+                                            "gender",
+                                           "educ_dad",
+                                     "educ_mom",
+                                     "dad_house",
+                                     "mom_house"))
 #Sample size 17.064
 
 #Drop all NA´s from ID variable 
@@ -157,7 +163,15 @@ table(wave2.2$drop_edu) #13.732 NA´s from dejo_estudiar
 #Dataset wave 3
 
 #Select variables of interest
-subset1_w3.3 <- subset(data2016, select = c("id", "wave", "age", "drop_edu"))
+subset1_w3.3 <- subset(data2016, select = c("id", 
+                                            "wave", 
+                                            "age", 
+                                            "drop_edu",
+                                            "gender",
+                                           "educ_dad",
+                                     "educ_mom",
+                                     "dad_house",
+                                     "mom_house"))
 #Sample size 19.298
 
 subset2_w3.3 <- subset(subset1_w3.3, !is.na(id))
@@ -182,7 +196,8 @@ subset1.1 <- subset(data2010_2016.1, !is.na(drop_edu))
 subset2.2 <- subset(subset1.1, age >= 6 & age <= 17)
 #Sample size 6.264
 
-data01.1 <- subset2.2
+subset3.3 <- subset(subset2.2, !is.na(educ_dad))
+data01.1 <- subset3.3
 #Sample size data01.1 6.264
 
 table(data01.1$drop_edu)
@@ -196,11 +211,11 @@ dependentv.1 <- pdata.frame(data01.1, index=c("id","wave"), drop.index=TRUE, row
 ```
 
 ```{r}
-freq_drop_edu <- dependentv.1 %>% 
+freq_drop_edu <- data01.1 %>% 
   count(drop_edu) %>%
   mutate("Percentage" = n / sum(n) *100) %>%
   kable(caption = "Percentage of observations by case in drop_edu variable", 
-        align = "c") %>% kable_styling(full_width = F)
+        align = "c") %>% kable_styling(bootstrap_options = c("striped", "hover"))
 
 freq_drop_edu
 ```

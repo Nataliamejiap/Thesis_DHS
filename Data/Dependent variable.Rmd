@@ -11,6 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+getwd()
+
 #Required packages
 
 library(dplyr)
@@ -27,6 +29,8 @@ library(stargazer)
 library(kableExtra)
 library(knitr)
 library(expss)
+library(summarytools)
+library(gmodels)
 
 ```
 
@@ -42,13 +46,14 @@ hist(data2010_raw$vr_ganancia)
 #Renaming the variables
 
 data2010 <- data2010_raw %>%
-  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive)
+  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive) 
 
 data2013 <- data2013_raw %>% 
    rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive)
 
 data2016 <- data2016_raw %>%
   rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive)
+
 
 #Recoding variable wave
 
@@ -58,114 +63,182 @@ data2016$wave <- 2016
 
 #Recoding variable inedu
 
-data2010$inedu[data2010$inedu == 1] <- 0
-data2013$inedu[data2013$inedu == 1] <- 0
-data2016$inedu[data2016$inedu == 1] <- 0
-
-data2010$inedu[data2010$inedu == 2] <- 1
-data2013$inedu[data2013$inedu == 2] <- 1
-data2016$inedu[data2016$inedu == 2] <- 1
+data2010$inedu[data2010$inedu == 2] <- 0
+data2013$inedu[data2013$inedu == 2] <- 0
+data2016$inedu[data2016$inedu == 2] <- 0
 
 #Recoding variable dad_house
 
-data2010$dad_house[data2010$dad_house == 1] <- 2
-data2013$dad_house[data2013$dad_house == 1] <- 1
-data2016$dad_house[data2016$dad_house == 1] <- 1
-
-
+data2010$dad_house[data2010$dad_house == 1] <- 1
 data2010$dad_house[data2010$dad_house == 2] <- 0
-data2013$dad_house[data2013$dad_house == 2] <- 1
-data2016$dad_house[data2016$dad_house == 2] <- 1
+data2010$dad_house[data2010$dad_house == 3] <- 9
+
+data2013$dad_house[data2013$dad_house == 1] <- 1
+data2013$dad_house[data2013$dad_house == 2] <- 0
+data2013$dad_house[data2013$dad_house == 3] <- 9
+
+data2013$dad_house <- factor(data2013$dad_house,
+                            levels = c(1,0,9),
+                            labels = c("1", 
+                                       "0",
+                                       "9"))
+                                      
+
+data2016$dad_house[data2016$dad_house == 1] <- 1
+data2016$dad_house[data2016$dad_house == 2] <- 0
+data2016$dad_house[data2016$dad_house == 3] <- 9
 
 
-levels(data2010$dad_house)
-levels(data2010$educ_dad)
-levels(data2010$inedu)
-levels(data2010$gender)
+data2010$mom_house[data2010$dad_house == 1] <- 1
+data2010$mom_house[data2010$mom_house == 2] <- 0
+data2010$mom_house[data2010$mom_house == 3] <- 9
+
+data2013$mom_house[data2013$mom_house == 1] <- 1
+data2013$mom_house[data2013$mom_house == 2] <- 0
+data2013$mom_house[data2013$mom_house == 3] <- 9
+
+data2016$mom_house[data2016$mom_house == 1] <- 1
+data2016$mom_house[data2016$mom_house == 2] <- 0
+data2016$mom_house[data2016$mom_house == 3] <- 9
 
 #Recoding variable edu_mom and edu_dad
 
+
+data2010$educ_dad[data2010$educ_dad == 1] <- 0
+data2010$educ_dad[data2010$educ_dad == 2] <- 1
+data2010$educ_dad[data2010$educ_dad == 3] <- 2
+data2010$educ_dad[data2010$educ_dad == 4] <- 3
+data2010$educ_dad[data2010$educ_dad == 5 &
+                    data2010$educ_dad == 6] <- 4
+data2010$educ_dad[data2010$educ_dad == 7 &
+                    data2010$educ_dad == 8] <- 5
+data2010$educ_dad[data2010$educ_dad == 9] <- 6
+
+
+
 data2010$educ_dad <- factor(data2010$educ_dad,
-                            levels = c(1,2,3,4,5,6,7,8,9,98,99),
-                            labels = c("Some years of primary school", 
-                                       "All primary school",
-                                       "Some years of secundary school",
-                                       "All secondary school",
-                                       "One or more years of technical educ",
-                                       "University without degree",
-                                       "Univeristy with degree",
-                                       "Posgrad",
-                                       "None",
-                                       "Does not know",
-                                       "No info"))
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                                      
+                                       
+data2013$educ_dad[data2013$educ_dad == 1] <- 0
+data2013$educ_dad[data2013$educ_dad == 2] <- 1
+data2013$educ_dad[data2013$educ_dad == 3] <- 2
+data2013$educ_dad[data2013$educ_dad == 4] <- 3
+data2013$educ_dad[data2013$educ_dad == 5 &
+                    data2013$educ_dad == 6] <- 4
+data2013$educ_dad[data2013$educ_dad == 7 &
+                    data2013$educ_dad == 8] <- 5
+data2013$educ_dad[data2013$educ_dad == 9] <- 6
+
 
 data2013$educ_dad <- factor(data2013$educ_dad,
-                            levels = c(1,2,3,4,5,6,7,8,9,98,99),
-                            labels = c("Some years of primary school", 
-                                       "All primary school",
-                                       "Some years of secundary school",
-                                       "All secondary school",
-                                       "One or more years of technical educ",
-                                       "University without title",
-                                       "Univeristy with title",
-                                       "Posgrad",
-                                       "None",
-                                       "Does not know",
-                                       "No info"))
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                                      
+data2016$educ_dad[data2016$educ_dad == 1] <- 0
+data2016$educ_dad[data2016$educ_dad == 2] <- 1
+data2016$educ_dad[data2016$educ_dad == 3] <- 2
+data2016$educ_dad[data2016$educ_dad == 4] <- 3
+data2016$educ_dad[data2016$educ_dad == 5 &
+                    data2016$educ_dad == 6] <- 4
+data2016$educ_dad[data2016$educ_dad == 7 &
+                    data2016$educ_dad == 8] <- 5
+data2016$educ_dad[data2016$educ_dad == 9] <- 6
+
+
 data2016$educ_dad <- factor(data2016$educ_dad,
-                            levels = c(1,2,3,4,5,6,7,8,9,98,99),
-                            labels = c("Some years of primary school", 
-                                       "All primary school",
-                                       "Some years of secundary school",
-                                       "All secondary school",
-                                       "One or more years of technical educ",
-                                       "University without title",
-                                       "Univeristy with title",
-                                       "Posgrad",
-                                       "None",
-                                       "Does not know",
-                                       "No info"))
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                                     
+
+
+data2010$educ_mom[data2010$educ_mom == 1] <- 0
+data2010$educ_mom[data2010$educ_mom == 2] <- 1
+data2010$educ_mom[data2010$educ_mom == 3] <- 2
+data2010$educ_mom[data2010$educ_mom == 4] <- 3
+data2010$educ_mom[data2010$educ_mom == 5 &
+                    data2010$educ_mom == 6] <- 4
+data2010$educ_mom[data2010$educ_mom == 7 &
+                    data2010$educ_mom == 8] <- 5
+data2010$educ_mom[data2010$educ_mom == 9] <- 6
+
+
 
 data2010$educ_mom <- factor(data2010$educ_mom,
-                            levels = c(1,2,3,4,5,6,7,8,9,98,99),
-                            labels = c("Some years of primary school", 
-                                       "All primary school",
-                                       "Some years of secundary school",
-                                       "All secondary school",
-                                       "One or more years of technical educ",
-                                       "University without title",
-                                       "Univeristy with title",
-                                       "Posgrad",
-                                       "None",
-                                       "Does not know",
-                                       "No info"))
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                                  
+
+data2013$educ_mom[data2013$educ_mom == 1] <- 0
+data2013$educ_mom[data2013$educ_mom == 2] <- 1
+data2013$educ_mom[data2013$educ_mom == 3] <- 2
+data2013$educ_mom[data2013$educ_mom == 4] <- 3
+data2013$educ_mom[data2013$educ_mom == 5 &
+                    data2013$educ_mom == 6] <- 4
+data2013$educ_mom[data2013$educ_mom == 7 &
+                    data2013$educ_mom == 8] <- 5
+data2013$educ_mom[data2013$educ_mom == 9] <- 6
+
+
 data2013$educ_mom <- factor(data2013$educ_mom,
-                            levels = c(1,2,3,4,5,6,7,8,9,98,99),
-                            labels = c("Some years of primary school", 
-                                       "All primary school",
-                                       "Some years of secundary school",
-                                       "All secondary school",
-                                       "One or more years of technical educ",
-                                       "University without title",
-                                       "Univeristy with title",
-                                       "Posgrad",
-                                       "None",
-                                       "Does not know",
-                                       "No info"))
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                                      
+
+                                      
+data2016$educ_mom[data2016$educ_mom == 1] <- 0
+data2010$educ_mom[data2016$educ_mom == 2] <- 1
+data2016$educ_mom[data2016$educ_mom == 3] <- 2
+data2016$educ_mom[data2016$educ_mom == 4] <- 3
+data2016$educ_mom[data2016$educ_mom == 5 &
+                    data2016$educ_mom == 6] <- 4
+data2016$educ_mom[data2016$educ_mom == 7 &
+                    data2016$educ_mom == 8] <- 5
+data2016$educ_mom[data2016$educ_mom == 9] <- 6
+
 
 data2016$educ_mom <- factor(data2016$educ_mom,
-                            levels = c(1,2,3,4,5,6,7,8,9,98,99),
-                            labels = c("Some years of primary school", 
-                                       "All primary school",
-                                       "Some years of secundary school",
-                                       "All secondary school",
-                                       "One or more years of technical educ",
-                                       "University without title",
-                                       "Univeristy with title",
-                                       "Posgrad",
-                                       "None",
-                                       "Does not know",
-                                       "No info"))
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                                      
+
 #Recoding variable income
 
 data2010$income[data2010$income < 877803] <- 1
@@ -242,10 +315,7 @@ data2010$mom_house <- as.factor(data2010$mom_house)
 data2013$mom_house <- as.factor(data2013$mom_house)
 data2016$mom_house <- as.factor(data2016$mom_house)
 
-table(data2010$educ)
-                             
 ```
-
 
 
 ```{r}
@@ -271,8 +341,6 @@ subset2_w1 <- subset(subset1_w1, !is.na(id))
 
 wave1 <- subset2_w1 #Sample size wave1 22.179
 
-summary(wave1$age)
-
 ```
 
 ```{r}
@@ -296,8 +364,6 @@ subset2_w2 <- subset(subset1_w2, !is.na(id))
 
 wave2 <- subset2_w2 #Sample size wave2 17,064
 
-table(wave2$inedu)
-table(wave2$age)
 ```
 
 ```{r}
@@ -322,7 +388,7 @@ subset2_w3 <- subset(subset1_w3, !is.na(id))
 
 wave3 <- subset2_w3 #Sample size wave3 14.944
 table(wave3$inedu)
-summary(wave3$age)
+summary(wave3$educ_dad)
 
 
 class(wave1$dad_house)
@@ -343,145 +409,137 @@ subset1 <- subset(data2010_2016, !is.na(inedu))
 subset2 <- subset(subset1, age >= 6 & age <= 17)
 #Sample size 10,358
 
-data01 <- subset2
-#Sample size data01 10,313
+subset3 <- subset(subset2, !is.na(educ_dad))
+#Sample size 2,784
 
-summary(data2010_2016$inedu)
-
-```
-
-```{r}
-#Shape the dataset as panel data for the dependent variable inedu
-
-dependentv <- pdata.frame(data01, index=c("id","wave"), drop.index=TRUE, row.names=TRUE) 
+data01 <- subset3
+#Sample size data01 2,784
 
 ```
 
-```{r}
-#Frequency tables for the dependent variable inedu
 
-freq_depv <- dependentv %>% 
+```{r}
+#Table for the dependent variable inedu (count and variation)
+
+freq_depv <- data01 %>% 
   count(inedu) %>%
-  mutate("Percentage" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by case in inedu variable", 
-        align = "c") %>% kable_styling(full_width = F)
+  mutate("%" = n / sum(n) *100) %>%
+  kable(caption = "Descriptive statistics of individuals attending school(inedu)", 
+        align = "c") %>%  kable_styling(bootstrap_options = c("striped", "hover"))
 
 freq_depv
 
 ```
 
-
 ```{r}
+#Table educ_dad
 
-dependentv_table <- table(dependentv) %>%
-  kable(caption = "Distribution of variable inedu by age",
-        col.names = c("Inedu = 0", "Inedu = 1"),
-        align = "c") %>% 
-   kable_minimal()
-
-dependentv_table
-
-```
-
-```{r}
-#Running pglm model with inedu and age 
-
-model <- pglm(inedu ~ age, model = "pooling", family = binomial("probit"), data = dependentv)
-
-summary(model) 
-
-```
-
-```{r}
-#Independent variable: parents education
-
-#Subsetting the data2010 to get variables of interest 
-
-parent_educ <- subset(data2010, select = c ("id","educ_dad", "educ_mom")) 
-#Sample size 22,179
-
-#Removing NAs from the parent education variables
-
-subset1_parent <- subset(parent_educ, !is.na(educ_dad))
-#Sample size 15,510
-
-subset2_parent <- subset(subset1_parent, !is.na(educ_mom))
-#10.648
-
-subset3_parent <- subset(subset2_parent, educ_dad != "No info")
-#Sample size 10,512
-
-subset4_parent <- subset(subset3_parent, educ_mom != "No info")
-#Sample size 10,500
-
-parent_edu2010 <- subset4_parent #10.500
-
-summary(parent_educ$educ_mom)
-summary(parent_educ$educ_dad)
-
-```
-
-```{r}
-
-freq_dad <- parent_edu2010 %>% 
+freq_dad <- data01 %>% 
   count(educ_dad) %>%
   mutate("%" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by case in educ_dad variable", 
-        align = "c") %>% kable_styling(full_width = F)
+  kable(caption = "Descriptive statistics of father´s level of education variable(educ_dad)", 
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
 freq_dad
 
 ```
 
 ```{r}
-freq_mom <- parent_edu2010 %>% 
+#Table educ mom
+
+freq_mom <- data01 %>% 
   count(educ_mom) %>%
   mutate("%" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by case in educ_mom variable", 
-        align = "c") %>% kable_styling(full_width = F)
+  kable(caption = "Descriptive statistics of mother´s level of education (educ_mom)", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
 freq_mom
 
 ```
 
 ```{r}
-#Merging the parentedu with the dependent variable inedu
+#Cross prop tables inedu & educ_mom and educ_dad
 
-parent_inedu_raw <- merge(data01, parent_edu2010, by= "id", all.x = TRUE)
-#Sample size 10,313
 
-subset_inedu <- subset(parent_inedu_raw, !is.na(educ_mom))
-#Sample 511
+inedu_educ1 <- prop.table(table(data01$educ_mom, data01$inedu),2)*100
 
-parent_inedu <- subset_inedu
-#Sample 511
+
+inedu_educ2 <- prop.table(table(data01$educ_dad, data01$inedu),2)*100
+
+
+inedu_educ1 %>%
+  kable(caption = "Cross tabulation of individuals attending school by level of education of the mother, column %",
+        col.names = c("inedu = 0", "inedu = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+inedu_educ2 %>%
+  kable(caption = "Cross tabulation of individuals attending school by level of education of the father, column %",
+        col.names = c("inedu = 0", "inedu = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+ x <- CrossTable(data01$educ_dad, data01$inedu)
+
 
 ```
 
-
 ```{r}
-#Distribution of variable educ_dad analytical sample depv inedu
+#Table dad_house
 
-freq_dad2 <- parent_inedu %>% 
-  count(educ_dad) %>%
+dad_house <- data01 %>% 
+  count(dad_house) %>%
   mutate("%" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by case in educ_dad variable", 
-        align = "c") %>% kable_styling(full_width = F)
+  kable(caption = "Descriptive statistics of father living in the househol(dad_house)", 
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
-freq_dad2
+dad_house
+levels(data01$dad_house)
+table(data2016$dad_house)
 ```
 
 ```{r}
-#Distribution of variable mom_educ analytical sample depv inedu
+#Table mom_house
 
-freq_mom2 <- parent_inedu %>% 
-  count(educ_mom) %>%
+mom_house <- data01 %>% 
+  count(mom_house) %>%
   mutate("%" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by case in educ_mom variable", 
-        align = "c") %>% kable_styling(full_width = F)
+  kable(caption = "Descriptive statistics of mother living in the househol(mom_house)", 
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
-freq_mom2
+mom_house
 
+levels(data01$dad_house)
+table(data2016$dad_house)
+```
+
+```{r}
+#Cross prop tables inedu & educ_mom and educ_dad
+
+
+inedu_house1 <- prop.table(table(data01$dad_house, data01$inedu),2)*100
+
+
+inedu_house2 <- prop.table(table(data01$mom_house, data01$inedu),2)*100
+
+
+inedu_house1 %>%
+  kable(caption = "Cross tabulation of individuals attending school by father living in the household, column %", 
+        col.names = c("inedu = 0", "inedu = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+inedu_house2 %>%
+  kable(caption = "Cross tabulation of individuals attending school by mother living in the household, column %", 
+        col.names = c("inedu = 0", "inedu = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+?kable
 ```
 
 ```{r}
@@ -534,31 +592,32 @@ income2016 <- subset_income2.3
 
 income00 <- rbind(income2010, income2013, income2016)
 
-income <- income00 %>%
-  select(id, income)
-```
-
-```{r}
-
-freq_income <- income2010 %>% 
-  count(income) %>%
-  mutate("%" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by category in income variable", 
-        align = "c") %>% kable_styling(full_width = F)
-
-freq_income
-
 ```
 
 
 ```{r}
 #Merging the household variable (income) with the dependent variable inedu
 
-parent_income1 <- merge(wave1, income2010, by= "id", all.x = TRUE)
+parent_income1 <- merge(data01, income00, by= "id", all.x = TRUE)
 
 subset_parent <- subset(parent_income1, !is.na(income))
 
+summary(parent_income1$income)
+
 ```
+```{r}
+
+freq_income <- parent_income1  %>% 
+  count(income) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  kable(caption = "Descriptive statistics of income", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_income
+
+```
+
 
 ```{r}
 ocu2010_raw <- subset(data2010, select = c ("id","orden","ocupation"))
@@ -573,44 +632,59 @@ subset_ocupation1 <- subset(subset_ocupation, !is.na(ocupation))
 
 ocupation2010 <- subset_ocupation1
 
-```
+ocu2013_raw <- subset(data2013, select = c ("id","orden","ocupation"))
 
+subset_ocu1 <- subset(ocu2013_raw, orden == 1 & 2)
+subset_ocu2 <- subset(subset_ocu1, !is.na(ocupation))
+
+ocupation2013 <- as.factor(subset_ocu2)
+
+ocu2016_raw <- subset(data2016, select = c ("id","orden","ocupation"))
+
+subset_ocu1.1 <- subset(ocu2016_raw, orden == 1 & 2)
+subset_ocu2.2 <- subset(subset_ocu1.1, !is.na(ocupation))
+
+ocupation2016 <- as.factor(subset_ocu2.2)
+
+ocupation <- rbind(ocupation2010, ocupation2013, ocupation2016)
+
+```
 ```{r}
 
-freq_ocu <- ocupation2010 %>% 
+freq_ocu <- parent_ocupation1 %>% 
   count(ocupation) %>%
   mutate("%" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by category in ocupation variable", 
-        align = "c") %>% kable_styling(full_width = F)
+  kable(caption = "Descriptive statistics of ocupation", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
 freq_ocu
 
 ```
+
 ```{r}
 #Merging the household variable (ocupation) with the dependent variable inedu
 
-parent_ocupation1 <- merge(wave1, ocupation2010, by= "id", all.x = TRUE)
+parent_ocupation1 <- merge(data01, ocupation, by= "id", all.x = TRUE)
 
 subset_parent <- subset(parent_ocupation1, !is.na(ocupation))
 
 ```
 
 ```{r}
-#Distribution of variable ocupation analytical sample depv inedu
+#Shape the dataset as panel data for the dependent variable inedu
 
-freq_mom2 <- parent_inedu %>% 
-  count(educ_mom) %>%
-  mutate("%" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by case in educ_mom variable", 
-        align = "c") %>% kable_styling(full_width = F)
-
-freq_mom2
+dependentv <- pdata.frame(data01, index=c("id","wave"), drop.index=TRUE, row.names=TRUE) 
 
 ```
 
-
 ```{r}
-table(data01$inedu, parent_educ$educ_dad)
+#Running pglm model with inedu and age 
+
+model <- pglm(inedu ~ age, model = "pooling", family = binomial("probit"), data = dependentv)
+
+summary(model) 
+
 ```
 
 

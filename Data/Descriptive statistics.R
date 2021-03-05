@@ -289,11 +289,12 @@ data2016$mom_house <- as.factor(data2016$mom_house)
 
 
 table(data01$inedu)
-y <- prop.table(table(data01$inedu, data01$educ_dad),2)
+y <- prop.table(table(data01$educ_dad, data01$inedu),2)
 
-x <- table(data01$inedu, data01$educ_mom)
+x <- table(data01$inedu, data2010$educ_dad)
 kbl(y) %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
+
 table(data01$inedu)
 
 
