@@ -46,14 +46,13 @@ hist(data2010_raw$vr_ganancia)
 #Renaming the variables
 
 data2010 <- data2010_raw %>%
-  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive) 
+  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive, type_school = tipo_estab) 
 
 data2013 <- data2013_raw %>% 
-   rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive)
+   rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive, type_school = tipo_estab)
 
 data2016 <- data2016_raw %>%
-  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive)
-
+  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive, type_school = tipo_estab)
 
 #Recoding variable wave
 
@@ -83,11 +82,11 @@ data2013$dad_house <- factor(data2013$dad_house,
                                        "0",
                                        "9"))
                                       
-
 data2016$dad_house[data2016$dad_house == 1] <- 1
 data2016$dad_house[data2016$dad_house == 2] <- 0
 data2016$dad_house[data2016$dad_house == 3] <- 9
 
+#Recoding variable mom_house
 
 data2010$mom_house[data2010$dad_house == 1] <- 1
 data2010$mom_house[data2010$mom_house == 2] <- 0
@@ -101,8 +100,7 @@ data2016$mom_house[data2016$mom_house == 1] <- 1
 data2016$mom_house[data2016$mom_house == 2] <- 0
 data2016$mom_house[data2016$mom_house == 3] <- 9
 
-#Recoding variable edu_mom and edu_dad
-
+#Recoding variable edu_dad
 
 data2010$educ_dad[data2010$educ_dad == 1] <- 0
 data2010$educ_dad[data2010$educ_dad == 2] <- 1
@@ -113,8 +111,6 @@ data2010$educ_dad[data2010$educ_dad == 5 &
 data2010$educ_dad[data2010$educ_dad == 7 &
                     data2010$educ_dad == 8] <- 5
 data2010$educ_dad[data2010$educ_dad == 9] <- 6
-
-
 
 data2010$educ_dad <- factor(data2010$educ_dad,
                             levels = c(0,1,2,3,4,5,6),
@@ -168,8 +164,8 @@ data2016$educ_dad <- factor(data2016$educ_dad,
                                        "Level 4_Post secondary non-tertiary educ",
                                        "Tertiary edu",
                                        "None"))
-                                     
 
+#Recoding variable edu_mom
 
 data2010$educ_mom[data2010$educ_mom == 1] <- 0
 data2010$educ_mom[data2010$educ_mom == 2] <- 1
@@ -182,7 +178,6 @@ data2010$educ_mom[data2010$educ_mom == 7 &
 data2010$educ_mom[data2010$educ_mom == 9] <- 6
 
 
-
 data2010$educ_mom <- factor(data2010$educ_mom,
                             levels = c(0,1,2,3,4,5,6),
                             labels = c("Level 0", 
@@ -193,7 +188,6 @@ data2010$educ_mom <- factor(data2010$educ_mom,
                                        "Tertiary edu",
                                        "None"))
                                   
-
 data2013$educ_mom[data2013$educ_mom == 1] <- 0
 data2013$educ_mom[data2013$educ_mom == 2] <- 1
 data2013$educ_mom[data2013$educ_mom == 3] <- 2
@@ -215,8 +209,6 @@ data2013$educ_mom <- factor(data2013$educ_mom,
                                        "Tertiary edu",
                                        "None"))
                                       
-
-                                      
 data2016$educ_mom[data2016$educ_mom == 1] <- 0
 data2010$educ_mom[data2016$educ_mom == 2] <- 1
 data2016$educ_mom[data2016$educ_mom == 3] <- 2
@@ -227,7 +219,6 @@ data2016$educ_mom[data2016$educ_mom == 7 &
                     data2016$educ_mom == 8] <- 5
 data2016$educ_mom[data2016$educ_mom == 9] <- 6
 
-
 data2016$educ_mom <- factor(data2016$educ_mom,
                             levels = c(0,1,2,3,4,5,6),
                             labels = c("Level 0", 
@@ -237,7 +228,6 @@ data2016$educ_mom <- factor(data2016$educ_mom,
                                        "Level 4_Post secondary non-tertiary educ",
                                        "Tertiary edu",
                                        "None"))
-                                      
 
 #Recoding variable income
 
@@ -255,7 +245,6 @@ data2010$income<- factor(data2010$income,
                                        "From 2 to less than 3 minimum wages",
                                      "More than 3 minimum wages"))
 
-
 data2013$income[data2013$income < 877803] <- 1
 data2013$income[data2013$income >= 877803] <- 2
 data2013$income[data2013$income < 877803] <- 2
@@ -272,7 +261,7 @@ data2013$income<- factor(data2013$income,
 
 data2016$income[data2016$income < 877803] <- 1
 data2016$income[data2016$income >= 877803] <- 2
-data2016$income[data2016$income < 877803] <- 2
+data2016$income[data2016$income < 1755606] <- 2
 data2016$income[data2016$income >= 1755606] <- 3
 data2016$income[data2016$income < 2633409]  <- 3            
 data2016$income[data2016$income > 2633409]  <- 4                
@@ -283,7 +272,6 @@ data2016$income<- factor(data2016$income,
                                        "From 1 to less than 2 minimum wages",
                                        "From 2 to less than 3 minimum wages",
                                      "More than 3 minimum wages"))
-
 
 #Recoding variable ocupation
 
@@ -301,11 +289,44 @@ data2010$ocupation <- factor(data2010$ocupation,
                                        "Unpaid family worker without",
                                        "Other"))  
 
+data2013$ocupation <- factor(data2013$ocupation,
+                            levels = c(1,2,3,4,5,6,7,8,9,10,11),
+                            labels = c("Salaried employee of a private company with indefinite-term contract",
+                                       "Salaried employee of a private company with fixed-term contract",
+                                       "Government employee with indefinite-term contract",
+                                       "Government employee with fixed-term contract",
+                                       "Laborer or day laborer",
+                                       "Domestic worker",
+                                       "Independent worker",
+                                       "Employer",
+                                       "Worker on own farm",
+                                       "Unpaid family worker without",
+                                       "Other"))  
+
+data2016$ocupation <- factor(data2016$ocupation,
+                            levels = c(1,2,3,4,5,6,7,8,9,10,11),
+                            labels = c("Salaried employee of a private company with indefinite-term contract",
+                                       "Salaried employee of a private company with fixed-term contract",
+                                       "Government employee with indefinite-term contract",
+                                       "Government employee with fixed-term contract",
+                                       "Laborer or day laborer",
+                                       "Domestic worker",
+                                       "Independent worker",
+                                       "Employer",
+                                       "Worker on own farm",
+                                       "Unpaid family worker without",
+                                       "Other"))  
+#Recoding type of school variable
+
+data2010$type_school[data2010$type_school == 2] <- 0
+data2013$type_school[data2013$type_school == 2] <- 0
+data2016$type_school[data2016$type_school == 2] <- 0
+
 #Converting variables double as factors
 
-data2010$income <- as.factor(data2010$income)
-data2013$income <- as.factor(data2013$income)
-data2016$income <- as.factor(data2016$income)
+data2010$ocupation <-as.factor(data2010$ocupation)
+data2013$ocupation <- as.factor(data2013$ocupation)
+data2016$ocupation <- as.factor(data2016$ocupation)
 
 data2010$dad_house <- as.factor(data2010$dad_house)
 data2013$dad_house <- as.factor(data2013$dad_house)
@@ -330,7 +351,11 @@ subset1_w1 <- subset(data2010, select = c("id",
                                            "educ_dad",
                                      "educ_mom",
                                      "dad_house",
-                                     "mom_house"))
+                                     "mom_house",
+                                     "income",
+                                     "ocupation",
+                                     "type_school"))
+                                     
                                     
                                      
 #Sample size 22,179
@@ -354,7 +379,10 @@ subset1_w2 <- subset(data2013, select = c("id","wave",
                                            "educ_dad",
                                      "educ_mom",
                                      "dad_house",
-                                     "mom_house"))
+                                     "mom_house",
+                                     "income",
+                                     "ocupation",
+                                     "type_school"))
                                      
 #Sample size 20,547
 
@@ -378,21 +406,19 @@ subset1_w3 <- subset(data2016, select = c("id",
                                            "educ_dad",
                                      "educ_mom",
                                      "dad_house",
-                                     "mom_house"))
-                                    
+                                     "mom_house",
+                                     "income",
+                                     "ocupation",
+                                     "type_school"))
                                      
+                                
 #Sample size 19,298
 
 subset2_w3 <- subset(subset1_w3, !is.na(id))
 #Sample size 14,944
 
 wave3 <- subset2_w3 #Sample size wave3 14.944
-table(wave3$inedu)
-summary(wave3$educ_dad)
 
-
-class(wave1$dad_house)
-class(wave1$educ_dad)
 ```
 
 
@@ -400,14 +426,16 @@ class(wave1$educ_dad)
 #Append the datasets
 
 data2010_2016 <- rbind(wave1, wave2, wave3) #Sample size 54,187
+summary(data2010_2016$inedu)
 
 #Drop all NA´s from inedu variable
 subset1 <- subset(data2010_2016, !is.na(inedu))
 #Sample size 41,198
 
-#Subset the data to ages between 6 and 17(compulsory education in Colombia)
-subset2 <- subset(subset1, age >= 6 & age <= 17)
+#Subset the data to ages between 5 and 16(compulsory education in Colombia)
+subset2 <- subset(subset1, age >= 5 & age <= 16)
 #Sample size 10,358
+table(subset1$inedu)
 
 subset3 <- subset(subset2, !is.na(educ_dad))
 #Sample size 2,784
@@ -424,6 +452,7 @@ data01 <- subset3
 freq_depv <- data01 %>% 
   count(inedu) %>%
   mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
   kable(caption = "Descriptive statistics of individuals attending school(inedu)", 
         align = "c") %>%  kable_styling(bootstrap_options = c("striped", "hover"))
 
@@ -432,11 +461,12 @@ freq_depv
 ```
 
 ```{r}
-#Table educ_dad
+#Table educ_dad (count and variation)
 
 freq_dad <- data01 %>% 
   count(educ_dad) %>%
   mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
   kable(caption = "Descriptive statistics of father´s level of education variable(educ_dad)", 
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
@@ -446,11 +476,12 @@ freq_dad
 ```
 
 ```{r}
-#Table educ mom
+#Table educ mom (count and variation)
 
 freq_mom <- data01 %>% 
   count(educ_mom) %>%
   mutate("%" = n / sum(n) *100) %>%
+  mutate_at(2, round, 2) %>%
   kable(caption = "Descriptive statistics of mother´s level of education (educ_mom)", 
         align = "c") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
@@ -460,7 +491,7 @@ freq_mom
 ```
 
 ```{r}
-#Cross prop tables inedu & educ_mom and educ_dad
+#Cross tables inedu & educ_mom and educ_dad
 
 
 inedu_educ1 <- prop.table(table(data01$educ_mom, data01$inedu),2)*100
@@ -470,51 +501,48 @@ inedu_educ2 <- prop.table(table(data01$educ_dad, data01$inedu),2)*100
 
 
 inedu_educ1 %>%
-  kable(caption = "Cross tabulation of individuals attending school by level of education of the mother, column %",
+  kable(caption = "Cross tabulation of level of education of the mother and individuals attending school, column %",
         col.names = c("inedu = 0", "inedu = 1"),
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
 inedu_educ2 %>%
-  kable(caption = "Cross tabulation of individuals attending school by level of education of the father, column %",
+  kable(caption = "Cross tabulation of level of education of the father and individuals attending school, column %",
         col.names = c("inedu = 0", "inedu = 1"),
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
-
- x <- CrossTable(data01$educ_dad, data01$inedu)
 
 
 ```
 
 ```{r}
-#Table dad_house
+#Table dad_house (count and variation)
 
 dad_house <- data01 %>% 
   count(dad_house) %>%
   mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
   kable(caption = "Descriptive statistics of father living in the househol(dad_house)", 
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
 dad_house
-levels(data01$dad_house)
-table(data2016$dad_house)
+
 ```
 
 ```{r}
-#Table mom_house
+#Table mom_house (count and variation)
 
 mom_house <- data01 %>% 
   count(mom_house) %>%
   mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
   kable(caption = "Descriptive statistics of mother living in the househol(mom_house)", 
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
 mom_house
 
-levels(data01$dad_house)
-table(data2016$dad_house)
 ```
 
 ```{r}
@@ -523,23 +551,23 @@ table(data2016$dad_house)
 
 inedu_house1 <- prop.table(table(data01$dad_house, data01$inedu),2)*100
 
-
+round(inedu_house1)
+  
 inedu_house2 <- prop.table(table(data01$mom_house, data01$inedu),2)*100
 
 
 inedu_house1 %>%
-  kable(caption = "Cross tabulation of individuals attending school by father living in the household, column %", 
+  kable(caption = "Cross tabulation father living in the household and individuals attending school, column %", 
         col.names = c("inedu = 0", "inedu = 1"),
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
 inedu_house2 %>%
-  kable(caption = "Cross tabulation of individuals attending school by mother living in the household, column %", 
+  kable(caption = "Cross tabulation mother living in the household and individuals attending school, column %", 
         col.names = c("inedu = 0", "inedu = 1"),
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
-?kable
 ```
 
 ```{r}
@@ -565,8 +593,9 @@ income2010 <- subset_income2
 income2013_raw <- subset(data2013, select = c ("id","orden", "income"))
 
 
-#Subsetting the data to the members 1 and 2 of the household (leader and partner)
+#Subsetting the data to the members 1 and 2 of the household (head of household and partner)
 subset_income1.1 <- subset(income2013_raw, orden == 1 & 2)
+
 
 
 #Eliminating the NA´s in de income variable
@@ -579,7 +608,7 @@ income2013 <- subset_income2.2
 income2016_raw <- subset(data2016, select = c ("id","orden", "income"))
 
 
-#Subsetting the data to the members 1 and 2 of the household (leader and partner)
+#Subsetting the data to the members 1 and 2 of the household (head of household and partner)
 subset_income1.2 <- subset(income2016_raw, orden == 1 & 2)
 
 
@@ -592,24 +621,15 @@ income2016 <- subset_income2.3
 
 income00 <- rbind(income2010, income2013, income2016)
 
-```
-
-
-```{r}
-#Merging the household variable (income) with the dependent variable inedu
-
-parent_income1 <- merge(data01, income00, by= "id", all.x = TRUE)
-
-subset_parent <- subset(parent_income1, !is.na(income))
-
-summary(parent_income1$income)
 
 ```
+
 ```{r}
 
-freq_income <- parent_income1  %>% 
+freq_income <- data01  %>% 
   count(income) %>%
   mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
   kable(caption = "Descriptive statistics of income", 
         align = "c") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
@@ -620,41 +640,12 @@ freq_income
 
 
 ```{r}
-ocu2010_raw <- subset(data2010, select = c ("id","orden","ocupation"))
-#Sample 22,178
+#Table count and variation ocupation
 
-#Subsetting the data to the members 1 and 2 of the household (leader and partner)
-subset_ocupation <- subset(ocu2010_raw, orden == 1 & 2)
-#Sample 5,275
-
-subset_ocupation1 <- subset(subset_ocupation, !is.na(ocupation))
-#4,210
-
-ocupation2010 <- subset_ocupation1
-
-ocu2013_raw <- subset(data2013, select = c ("id","orden","ocupation"))
-
-subset_ocu1 <- subset(ocu2013_raw, orden == 1 & 2)
-subset_ocu2 <- subset(subset_ocu1, !is.na(ocupation))
-
-ocupation2013 <- as.factor(subset_ocu2)
-
-ocu2016_raw <- subset(data2016, select = c ("id","orden","ocupation"))
-
-subset_ocu1.1 <- subset(ocu2016_raw, orden == 1 & 2)
-subset_ocu2.2 <- subset(subset_ocu1.1, !is.na(ocupation))
-
-ocupation2016 <- as.factor(subset_ocu2.2)
-
-ocupation <- rbind(ocupation2010, ocupation2013, ocupation2016)
-
-```
-```{r}
-
-freq_ocu <- parent_ocupation1 %>% 
+freq_ocu <- data01 %>% 
   count(ocupation) %>%
   mutate("%" = n / sum(n) *100) %>%
-  kable(caption = "Descriptive statistics of ocupation", 
+  kable(caption = "Descriptive statistics of ocupation of head of the household or partner", 
         align = "c") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 
@@ -663,25 +654,120 @@ freq_ocu
 ```
 
 ```{r}
-#Merging the household variable (ocupation) with the dependent variable inedu
+inedu_ocu <- prop.table(table(data01$ocupation, data01$inedu),2)*100
 
-parent_ocupation1 <- merge(data01, ocupation, by= "id", all.x = TRUE)
-
-subset_parent <- subset(parent_ocupation1, !is.na(ocupation))
+inedu_ocu %>%
+  kable(caption = "Cross tabulation of ocupation of the head of the household or partner and individuals attending school, column %",
+        col.names = c("inedu = 0", "inedu = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
 ```
 
 ```{r}
+#Table count and variation type of school
+
+freq_school <- data01 %>% 
+  count(type_school) %>%
+  mutate("%" = n / sum(n) *100) %>%
+   mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of type of school", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_school
+
+```
+
+```{r}
+#Cross tab type of school and inedu
+
+inedu_school <- prop.table(table(data01$type_school, data01$inedu),2)*100
+
+inedu_school %>%
+  kable(caption = "Cross tabulation of type of school and individuals attending school, column %",
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+  
+```
+
+```{r}
+#Table count and variation age
+
+freq_age <- data01 %>% 
+  count(age) %>%
+  mutate("%" = n / sum(n) *100) %>%
+   mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of type of age of students", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_age
+
+```
+
+```{r}
+#Cross tab type of age and inedu
+
+inedu_age <- prop.table(table(data01$age, data01$inedu),2)*100
+
+inedu_age %>%
+  kable(caption = "Cross tabulation of age and individuals attending school, column %",
+        col.names = c("inedu = 0", "inedu = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
+
+```{r}
+#Table count and variation gender
+
+freq_gender <- data01 %>% 
+  count(gender) %>%
+  mutate("%" = n / sum(n) *100) %>%
+   mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of gender of students", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_gender
+
+```
+
+```{r}
+#Cross tab gender and inedu
+
+inedu_gender <- prop.table(table(data01$gender, data01$inedu),2)*100
+
+inedu_gender %>%
+  kable(caption = "Cross tabulation of gender and individuals attending school, column %",
+        col.names = c("inedu = 0", "inedu = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
 #Shape the dataset as panel data for the dependent variable inedu
 
-dependentv <- pdata.frame(data01, index=c("id","wave"), drop.index=TRUE, row.names=TRUE) 
+model01 <- pdata.frame(data01, index=c("id","wave"), drop.index=TRUE, row.names=TRUE) 
 
 ```
 
 ```{r}
 #Running pglm model with inedu and age 
 
-model <- pglm(inedu ~ age, model = "pooling", family = binomial("probit"), data = dependentv)
+model <- pglm(inedu ~ educ_dad + dad_house + mom_house + age + gender, model = "pooling", family = binomial("probit"), data = model01)
 
 summary(model) 
 

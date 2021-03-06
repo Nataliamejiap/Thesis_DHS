@@ -146,7 +146,10 @@ subset1_w2.2 <- subset(data2013, select = c("id","wave", "age",
                                            "educ_dad",
                                      "educ_mom",
                                      "dad_house",
-                                     "mom_house"))
+                                     "mom_house",
+                                     "income",
+                                     "ocupation",
+                                     "type_school"))
 #Sample size 17.064
 
 #Drop all NA´s from ID variable 
@@ -171,7 +174,10 @@ subset1_w3.3 <- subset(data2016, select = c("id",
                                            "educ_dad",
                                      "educ_mom",
                                      "dad_house",
-                                     "mom_house"))
+                                     "mom_house",
+                                     "income",
+                                     "ocupation",
+                                     "type_school"))
 #Sample size 19.298
 
 subset2_w3.3 <- subset(subset1_w3.3, !is.na(id))
@@ -186,23 +192,249 @@ table(wave3.3$drop_edu) #11.547 NA´s from dejo_estudiar
 ```{r}
 #Append the datasets
 
-data2010_2016.1 <- rbind(wave2.2, wave3.3) #Sample size 32.008
+data2010_2016.1 <- rbind(wave2.2, wave3.3) #Sample size 32,008
 
 #Drop all NA´s from dejo_estudiar
 subset1.1 <- subset(data2010_2016.1, !is.na(drop_edu))
-#Sample size 6.729
+#Sample size 6,729
 
-#Subset the data to ages between 6 and 17(compulsory education in Colombia)
-subset2.2 <- subset(subset1.1, age >= 6 & age <= 17)
-#Sample size 6.264
+#Subset the data to ages between 5 and 16(compulsory education in Colombia)
+subset2.2 <- subset(subset1.1, age >= 5 & age <= 16)
+#Sample size 6,628
 
 subset3.3 <- subset(subset2.2, !is.na(educ_dad))
 data01.1 <- subset3.3
 #Sample size data01.1 6.264
 
-table(data01.1$drop_edu)
-summary(data2010_2016.1$drop_edu)
 ```
+
+```{r}
+#Table count and variation dropout
+
+freq_drop_edu <- data01.1 %>% 
+  count(drop_edu) %>%
+  mutate("Percentage" = n / sum(n) *100) %>%
+  kable(caption = "Descriptive statistics of dropouts (drop_edu)", 
+        align = "c") %>% kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_drop_edu
+```
+
+```{r}
+#Table educ_dad (count and variation)
+
+freq_dad1 <- data01.1 %>% 
+  count(educ_dad) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of father´s level of education variable(educ_dad)", 
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_dad1
+
+```
+```{r}
+#Table educ mom (count and variation)
+
+freq_mom1 <- data01.1 %>% 
+  count(educ_mom) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(2, round, 2) %>%
+  kable(caption = "Descriptive statistics of mother´s level of education (educ_mom)", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_mom
+
+```
+
+
+```{r}
+#Cross tables drop_edu & educ_mom and educ_dad
+
+
+dropedu_educ1 <- prop.table(table(data01.1$educ_mom, data01.1$drop_edu),2)*100
+
+
+dropedu_educ2 <- prop.table(table(data01.1$educ_dad, data01.1$drop_edu),2)*100
+
+
+dropedu_educ1 %>%
+  kable(caption = "Cross tabulation of level of education of the mother and school dropouts, column %",
+        col.names = c("dropout = 0", "dropout = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+inedu_educ2 %>%
+  kable(caption = "Cross tabulation of level of education of the father and school dropouts, column %",
+        col.names = c("dropout = 0", "dropout = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
+```{r}
+#Table dad_house (count and variation)
+
+dad_house1 <- data01.1 %>% 
+  count(dad_house) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of father living in the househol(dad_house)", 
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+dad_house
+
+```
+
+```{r}
+#Table mom_house (count and variation)
+
+mom_house1 <- data01.1 %>% 
+  count(mom_house) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of mother living in the househol(mom_house)", 
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+mom_house
+```
+```{r}
+#Cross prop tables drop_edu & educ_mom and educ_dad
+
+
+dropedu_house1 <- prop.table(table(data01.1$dad_house, data01.1$drop_edu),2)*100
+
+  
+dropedu_house2 <- prop.table(table(data01.1$mom_house, data01.1$drop_edu),2)*100
+
+
+dropedu_house1 %>%
+  kable(caption = "Cross tabulation father living in the household and school dropouts, column %",
+        col.names = c("dropout = 0", "dropout = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+dropedu_house2 %>%
+  kable(caption = "Cross tabulation mother living in the household and school dropouts, column %", 
+        col.names = c("dropout = 0", "dropout = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+```{r}
+#Income
+
+freq_income1 <- data01.1  %>% 
+  count(income) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of income", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_income1
+```
+```{r}
+#Table count and variation ocupation
+
+freq_ocu1 <- data01.1 %>% 
+  count(ocupation) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  kable(caption = "Descriptive statistics of ocupation of head of the household or partner", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_ocu1
+```
+
+```{r}
+dropedu_ocu <- prop.table(table(data01.1$ocupation, data01.1$drop_edu),2)*100
+
+dropedu_ocu %>%
+  kable(caption = "Cross tabulation of ocupation of the head of the household or partner and individuals attending school, column %",
+        col.names = c("dropout = 0", "dropout = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+```{r}
+#Table count and variation type of school
+
+freq_school1 <- data01.1 %>% 
+  count(type_school) %>%
+  mutate("%" = n / sum(n) *100) %>%
+   mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of type of school", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_school1
+```
+
+```{r}
+#Cross tab type of school and drop_edu
+
+dropedu_school <- prop.table(table(data01.1$type_school, data01.1$drop_edu),2)*100
+
+dropedu_school %>%
+  kable(caption = "Cross tabulation of type of school and school dropouts, column %",
+        col.names = c("dropout = 0", "dropout = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+
+
+table(data01.1$type_school)
+```
+```{r}
+#Table count and variation age
+
+freq_age1 <- data01.1 %>% 
+  count(age) %>%
+  mutate("%" = n / sum(n) *100) %>%
+   mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of type of age of students", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_age1
+
+
+```
+
+```{r}
+#Cross tab type of age and drop_edu
+
+dropedu_age <- prop.table(table(data01.1$age, data01.1$drop_edu),2)*100
+
+dropedu_age %>%
+  kable(caption = "Cross tabulation of age and school dropouts, column %",
+        col.names = c("dropout = 0", "dropout = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+```{r}
+#Table count and variation gender
+
+freq_gender1 <- data01.1 %>% 
+  count(gender) %>%
+  mutate("%" = n / sum(n) *100) %>%
+   mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of gender of students", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+freq_gender1
+```
+
+
+
+
+
 
 ```{r}
 #Shape the dataset as panel data for the dependent variable inedu
@@ -210,61 +442,5 @@ summary(data2010_2016.1$drop_edu)
 dependentv.1 <- pdata.frame(data01.1, index=c("id","wave"), drop.index=TRUE, row.names=TRUE)
 ```
 
-```{r}
-freq_drop_edu <- data01.1 %>% 
-  count(drop_edu) %>%
-  mutate("Percentage" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by case in drop_edu variable", 
-        align = "c") %>% kable_styling(bootstrap_options = c("striped", "hover"))
 
-freq_drop_edu
-```
-
-```{r}
-#Merging the parentedu with the dependent variable drop_edu
-
-parent_dropedu_raw <- merge(data01.1, parent_edu2010, by= "id", all.x = TRUE)
-#Sample size 6.264
-
-subset_dropedu <- subset(parent_dropedu_raw, !is.na(educ_mom))
-#Sample 232
-
-parent_dropedu <- subset_dropedu
-#Sample 232
-
-```
-
-```{r}
-#Distribution of variable educ_dad analytical sample depv drop_edu
-
-freq_dad2 <- parent_dropedu %>% 
-  count(educ_dad) %>%
-  mutate("%" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by case in educ_dad variable", 
-        align = "c") %>% kable_styling(full_width = F)
-
-freq_dad2
-
-```
-
-```{r}
-#Distribution of variable educ_mom analytical sample depv drop_edu
-
-freq_mom2 <- parent_dropedu %>% 
-  count(educ_mom) %>%
-  mutate("%" = n / sum(n) *100) %>%
-  kable(caption = "Percentage of observations by case in educ_mom variable", 
-        align = "c") %>% kable_styling(full_width = F)
-
-freq_mom2
-
-```
-
-```{r}
-#Income
-
-
-
-
-```
 
