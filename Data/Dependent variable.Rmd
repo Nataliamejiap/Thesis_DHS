@@ -354,7 +354,8 @@ subset1_w1 <- subset(data2010, select = c("id",
                                      "mom_house",
                                      "income",
                                      "ocupation",
-                                     "type_school"))
+                                     "type_school",
+                                     "consecutivo"))
                                      
                                     
                                      
@@ -382,7 +383,8 @@ subset1_w2 <- subset(data2013, select = c("id","wave",
                                      "mom_house",
                                      "income",
                                      "ocupation",
-                                     "type_school"))
+                                     "type_school",
+                                     "consecutivo"))
                                      
 #Sample size 20,547
 
@@ -409,7 +411,8 @@ subset1_w3 <- subset(data2016, select = c("id",
                                      "mom_house",
                                      "income",
                                      "ocupation",
-                                     "type_school"))
+                                     "type_school",
+                                     "consecutivo"))
                                      
                                 
 #Sample size 19,298
@@ -481,7 +484,7 @@ freq_dad
 freq_mom <- data01 %>% 
   count(educ_mom) %>%
   mutate("%" = n / sum(n) *100) %>%
-  mutate_at(2, round, 2) %>%
+  mutate_at(3, round, 2) %>%
   kable(caption = "Descriptive statistics of mother´s level of education (educ_mom)", 
         align = "c") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))

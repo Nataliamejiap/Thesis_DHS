@@ -133,7 +133,6 @@ data2016$drop_edu[data2016$drop_edu == 2] <- 0
 ```
 
 
-
 ```{r}
 #Dejo_estudiar variable
 
@@ -149,7 +148,8 @@ subset1_w2.2 <- subset(data2013, select = c("id","wave", "age",
                                      "mom_house",
                                      "income",
                                      "ocupation",
-                                     "type_school"))
+                                     "type_school",
+                                     "consecutivo"))
 #Sample size 17.064
 
 #Drop all NA´s from ID variable 
@@ -177,7 +177,8 @@ subset1_w3.3 <- subset(data2016, select = c("id",
                                      "mom_house",
                                      "income",
                                      "ocupation",
-                                     "type_school"))
+                                     "type_school",
+                                     "consecutivo"))
 #Sample size 19.298
 
 subset2_w3.3 <- subset(subset1_w3.3, !is.na(id))
@@ -355,7 +356,7 @@ freq_ocu1
 dropedu_ocu <- prop.table(table(data01.1$ocupation, data01.1$drop_edu),2)*100
 
 dropedu_ocu %>%
-  kable(caption = "Cross tabulation of ocupation of the head of the household or partner and individuals attending school, column %",
+  kable(caption = "Cross tabulation of ocupation of the head of the household or partner and school dropouts, column %",
         col.names = c("dropout = 0", "dropout = 1"),
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
@@ -385,10 +386,9 @@ dropedu_school %>%
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
-
-
-table(data01.1$type_school)
 ```
+
+
 ```{r}
 #Table count and variation age
 
@@ -429,6 +429,17 @@ freq_gender1 <- data01.1 %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
 freq_gender1
+```
+```{r}
+#Cross tab gender and inedu
+
+dropedu_gender <- prop.table(table(data01.1$gender, data01.1$drop_edu),2)*100
+
+dropedu_gender %>%
+  kable(caption = "Cross tabulation of gender and school dropouts, column %",
+        col.names = c("dropout = 0", "dropout = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 
