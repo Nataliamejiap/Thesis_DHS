@@ -10,7 +10,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, include=FALSE}
 getwd()
 
 #Required packages
@@ -40,8 +40,6 @@ library(gmodels)
 data2010_raw <- read_dta("peopleu.dta") #Sample size 22,179 observations
 data2013_raw <- read_dta("peopleu2013.dta") #Sample size 20,574 observations
 data2016_raw <- read_dta("peopleu2016.dta") #Sample size 19,298
-
-hist(data2010_raw$vr_ganancia)
 
 #Renaming the variables
 
@@ -573,59 +571,6 @@ inedu_house2 %>%
 
 ```
 
-```{r}
-#Independent variable: household (income)
-
-#Subsetting the data2010 to get variable of interest income
-
-income2010_raw <- subset(data2010, select = c ("id","orden", "income"))
-#Sample 22,178
-
-#Subsetting the data to the members 1 and 2 of the household (leader and partner)
-subset_income1 <- subset(income2010_raw, orden == 1 & 2)
-#Sample 5,275
-
-#Eliminating the NA´s in de income variable
-subset_income2 <- subset(subset_income1, !is.na(income))
-#Sample 2,210
-
-income2010 <- subset_income2
-#2,210
-
-
-income2013_raw <- subset(data2013, select = c ("id","orden", "income"))
-
-
-#Subsetting the data to the members 1 and 2 of the household (head of household and partner)
-subset_income1.1 <- subset(income2013_raw, orden == 1 & 2)
-
-
-
-#Eliminating the NA´s in de income variable
-subset_income2.2 <- subset(subset_income1.1, !is.na(income))
-
-
-income2013 <- subset_income2.2
-
-
-income2016_raw <- subset(data2016, select = c ("id","orden", "income"))
-
-
-#Subsetting the data to the members 1 and 2 of the household (head of household and partner)
-subset_income1.2 <- subset(income2016_raw, orden == 1 & 2)
-
-
-#Eliminating the NA´s in de income variable
-subset_income2.3 <- subset(subset_income1.2, !is.na(income))
-
-
-income2016 <- subset_income2.3
-
-
-income00 <- rbind(income2010, income2013, income2016)
-
-
-```
 
 ```{r}
 
@@ -768,9 +713,9 @@ model01 <- pdata.frame(data01, index=c("id","wave"), drop.index=TRUE, row.names=
 ```
 
 ```{r}
-#Running pglm model with inedu and age 
+#Running pglm model with inedu 
 
-model <- pglm(inedu ~ educ_dad + dad_house + mom_house + age + gender, model = "pooling", family = binomial("probit"), data = model01)
+model <- pglm(inedu ~ educ_dad + age + gender, model = "pooling", family = binomial("probit"), data = model01)
 
 summary(model) 
 

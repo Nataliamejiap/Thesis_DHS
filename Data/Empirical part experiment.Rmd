@@ -9,6 +9,33 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, include=FALSE}
+getwd()
+
+#Required packages
+
+library(dplyr)
+library(haven)
+library(xtable)
+library(plm)
+library(pglm)
+library(broom)
+library(knitr) 
+library(tidyverse)
+library(tidyr)
+library(haven)
+library(stargazer)
+library(kableExtra)
+library(knitr)
+library(expss)
+library(summarytools)
+library(gmodels)
+
+```
+
+
+
+
 ## Experiment with other variables
 
 ```{r}
@@ -21,13 +48,13 @@ data2016_raw <- read_dta("peopleu2016.dta") #Sample size 19.298
 #Renaming the variables
 
 data2010 <- data2010_raw %>%
-  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo)
+  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive, type_school = tipo_estab) 
 
 data2013 <- data2013_raw %>% 
-   rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar)
+   rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive, type_school = tipo_estab)
 
 data2016 <- data2016_raw %>%
-  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar)
+  rename(id = llave_ID_lb, wave = ola, age = edad, inedu = estudia, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, drop_edu = dejo_estudiar, income = vr_salario, ocupation = ocupacion, dad_house = padre_vive,mom_house = madre_vive, type_school = tipo_estab)
 
 #Recoding variable wave
 
@@ -134,7 +161,7 @@ data2016$drop_edu[data2016$drop_edu == 2] <- 0
 
 
 ```{r}
-#Dejo_estudiar variable
+#Drop_edu variable
 
 #Dataset wave 2
 
@@ -246,7 +273,7 @@ freq_mom1 <- data01.1 %>%
         align = "c") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 
-freq_mom
+
 
 ```
 
@@ -267,12 +294,6 @@ dropedu_educ1 %>%
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
-inedu_educ2 %>%
-  kable(caption = "Cross tabulation of level of education of the father and school dropouts, column %",
-        col.names = c("dropout = 0", "dropout = 1"),
-        align = "c") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
-
 ```
 
 ```{r}
@@ -286,7 +307,6 @@ dad_house1 <- data01.1 %>%
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
-dad_house
 
 ```
 
@@ -301,7 +321,7 @@ mom_house1 <- data01.1 %>%
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
-mom_house
+
 ```
 ```{r}
 #Cross prop tables drop_edu & educ_mom and educ_dad
@@ -339,6 +359,8 @@ freq_income1 <- data01.1  %>%
 
 freq_income1
 ```
+
+
 ```{r}
 #Table count and variation ocupation
 
@@ -441,10 +463,6 @@ dropedu_gender %>%
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
-
-
-
-
 
 
 ```{r}
