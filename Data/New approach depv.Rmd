@@ -1,0 +1,298 @@
+---
+title: "New approach depv"
+author: "Natalia Mejia"
+date: "14/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+#Required packages
+twd()
+
+library(dplyr)
+library(haven)
+library(xtable)
+library(plm)
+library(pglm)
+library(broom)
+library(knitr) 
+library(tidyverse)
+library(tidyr)
+library(haven)
+library(stargazer)
+library(kableExtra)
+library(knitr)
+library(expss)
+library(forcats)
+```
+
+```{r}
+#Getting the datasets
+
+data2010_raw <- read_dta("peopleu.dta") #Sample size 22.179 observations
+data2013_raw <- read_dta("peopleu2013.dta") #Sample size 20.574 observations
+data2016_raw <- read_dta("peopleu2016.dta") #Sample size 19.298
+
+
+#Renaming the variables
+
+data2010 <- data2010_raw %>%
+  rename(id = llave_ID_lb, wave = ola, age = edad, level_educ = nivel_educ, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, dad_house = padre_vive,mom_house = madre_vive, type_school = tipo_estab)
+
+data2013 <- data2013_raw %>% 
+   rename(id = llave_ID_lb, wave = ola, age = edad, level_educ = nivel_educ, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, dad_house = padre_vive,mom_house = madre_vive, type_school = tipo_estab)
+
+data2016 <- data2016_raw %>%
+  rename(id = llave_ID_lb, wave = ola, age = edad, level_educ = nivel_educ, educ_dad = educ_padre, educ_mom = educ_madre, gender = sexo, dad_house = padre_vive,mom_house = madre_vive, type_school = tipo_estab)
+
+
+#Recoding variable wave
+
+data2010$wave <- 2010 
+data2013$wave <- 2013 
+data2016$wave <- 2016 
+
+#Recoding variable level_educ
+
+#In wave 1
+
+data2010$level_educ <- as.factor(data2010$level_educ)
+
+data2010$level_educ <- fct_collapse(data2010$level_educ,
+                                    "0" = c("1", "2","3"),
+                                    "1" = c("4", "5", "6", "7", "8",
+                                       "9", "10", "11", "12"))
+#In wave 2
+data2013$level_educ <- as.factor(data2013$level_educ)
+
+data2013$level_educ <- fct_collapse(data2013$level_educ,
+                                    "0" = c("1", "2","3"),
+                                    "1" = c("4", "5", "6", "7", "8",
+                                       "9", "10", "11", "12"))
+#In wave 3
+data2016$level_educ <- as.factor(data2016$level_educ)
+
+data2016$level_educ <- fct_collapse(data2016$level_educ,
+                                    "0" = c("1", "2","3"),
+                                    "1" = c("4", "5", "6", "7", "8",
+                                       "9", "10", "11", "12"))
+
+
+#Recoding variable dad_house
+
+data2010$dad_house <- as.factor(data2010$dad_house)
+
+data2010$dad_house <- fct_collapse(data2010$dad_house,
+                                   "1" = c("1"),
+                                   "0" = c("2"),
+                                   "9" = c("3")) 
+
+
+data2013$dad_house <- as.factor(data2013$dad_house)
+
+data2013$dad_house <- fct_collapse(data2013$dad_house,
+                                   "1" = c("1"),
+                                   "0" = c("2"),
+                                   "9" = c("3")) 
+
+data2016$dad_house <- as.factor(data2016$dad_house)
+
+data2016$dad_house <- fct_collapse(data2016$dad_house,
+                                   "1" = c("1"),
+                                   "0" = c("2"),
+                                   "9" = c("3")) 
+
+#Recoding variable edu_dad
+data2010$educ_dad[data2010$educ_dad == 1] <- 0
+data2010$educ_dad[data2010$educ_dad == 2] <- 1
+data2010$educ_dad[data2010$educ_dad == 3] <- 2
+data2010$educ_dad[data2010$educ_dad == 4] <- 3
+data2010$educ_dad[data2010$educ_dad == 5 &
+                    data2010$educ_dad == 6] <- 4
+data2010$educ_dad[data2010$educ_dad == 7 &
+                    data2010$educ_dad == 8] <- 5
+data2010$educ_dad[data2010$educ_dad == 9] <- 6
+data2010$educ_dad <- factor(data2010$educ_dad,
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                                      
+                                       
+data2013$educ_dad[data2013$educ_dad == 1] <- 0
+data2013$educ_dad[data2013$educ_dad == 2] <- 1
+data2013$educ_dad[data2013$educ_dad == 3] <- 2
+data2013$educ_dad[data2013$educ_dad == 4] <- 3
+data2013$educ_dad[data2013$educ_dad == 5 &
+                    data2013$educ_dad == 6] <- 4
+data2013$educ_dad[data2013$educ_dad == 7 &
+                    data2013$educ_dad == 8] <- 5
+data2013$educ_dad[data2013$educ_dad == 9] <- 6
+data2013$educ_dad <- factor(data2013$educ_dad,
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                                      
+data2016$educ_dad[data2016$educ_dad == 1] <- 0
+data2016$educ_dad[data2016$educ_dad == 2] <- 1
+data2016$educ_dad[data2016$educ_dad == 3] <- 2
+data2016$educ_dad[data2016$educ_dad == 4] <- 3
+data2016$educ_dad[data2016$educ_dad == 5 &
+                    data2016$educ_dad == 6] <- 4
+data2016$educ_dad[data2016$educ_dad == 7 &
+                    data2016$educ_dad == 8] <- 5
+data2016$educ_dad[data2016$educ_dad == 9] <- 6
+data2016$educ_dad <- factor(data2016$educ_dad,
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+#Recoding variable edu_mom
+data2010$educ_mom[data2010$educ_mom == 1] <- 0
+data2010$educ_mom[data2010$educ_mom == 2] <- 1
+data2010$educ_mom[data2010$educ_mom == 3] <- 2
+data2010$educ_mom[data2010$educ_mom == 4] <- 3
+data2010$educ_mom[data2010$educ_mom == 5 &
+                    data2010$educ_mom == 6] <- 4
+data2010$educ_mom[data2010$educ_mom == 7 &
+                    data2010$educ_mom == 8] <- 5
+data2010$educ_mom[data2010$educ_mom == 9] <- 6
+data2010$educ_mom <- factor(data2010$educ_mom,
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                                  
+data2013$educ_mom[data2013$educ_mom == 1] <- 0
+data2013$educ_mom[data2013$educ_mom == 2] <- 1
+data2013$educ_mom[data2013$educ_mom == 3] <- 2
+data2013$educ_mom[data2013$educ_mom == 4] <- 3
+data2013$educ_mom[data2013$educ_mom == 5 &
+                    data2013$educ_mom == 6] <- 4
+data2013$educ_mom[data2013$educ_mom == 7 &
+                    data2013$educ_mom == 8] <- 5
+data2013$educ_mom[data2013$educ_mom == 9] <- 6
+data2013$educ_mom <- factor(data2013$educ_mom,
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                                      
+data2016$educ_mom[data2016$educ_mom == 1] <- 0
+data2010$educ_mom[data2016$educ_mom == 2] <- 1
+data2016$educ_mom[data2016$educ_mom == 3] <- 2
+data2016$educ_mom[data2016$educ_mom == 4] <- 3
+data2016$educ_mom[data2016$educ_mom == 5 &
+                    data2016$educ_mom == 6] <- 4
+data2016$educ_mom[data2016$educ_mom == 7 &
+                    data2016$educ_mom == 8] <- 5
+data2016$educ_mom[data2016$educ_mom == 9] <- 6
+data2016$educ_mom <- factor(data2016$educ_mom,
+                            levels = c(0,1,2,3,4,5,6),
+                            labels = c("Level 0", 
+                                       "Level 1_Primary",
+                                       "Level 2_Lower secondary educ",
+                                       "Level 3_Upper secondary educ",
+                                       "Level 4_Post secondary non-tertiary educ",
+                                       "Tertiary edu",
+                                       "None"))
+                      
+```
+
+```{r}
+#Dataset wave 1
+
+#Select the variables of interest 
+subset1_w1 <- subset(data2010, select = c("id", 
+                                          "wave", 
+                                          "age",
+                                          "level_educ",
+                                          "gender",
+                                           "educ_dad",
+                                     "educ_mom",
+                                     "dad_house",
+                                     "mom_house",
+                                     "type_school",
+                                     "consecutivo"))
+#Sample size 22,179
+
+wave1 <- subset1_w1 #Sample size wave1 22.179
+
+```
+
+```{r}
+subset1_w2 <- subset(data2013, select = c("id", 
+                                          "wave", 
+                                          "age",
+                                          "level_educ",
+                                          "gender",
+                                           "educ_dad",
+                                     "educ_mom",
+                                     "dad_house",
+                                     "mom_house",
+                                     "type_school",
+                                     "consecutivo"))
+
+#Sample size 20,574
+
+#Drop all NA´s from ID variable
+subset2_w2 <- subset(subset1_w2, !is.na(id))
+#Sample size 17,064
+
+wave2 <- subset2_w2 #Sample size wave2 17,064
+
+```
+
+```{r}
+subset1_w3 <- subset(data2016, select = c("id", 
+                                          "wave", 
+                                          "age",
+                                          "level_educ",
+                                          "gender",
+                                           "educ_dad",
+                                     "educ_mom",
+                                     "dad_house",
+                                     "mom_house",
+                                     "type_school",
+                                     "consecutivo"))
+#Sample size 19,298
+
+subset2_w3 <- subset(subset1_w3, !is.na(id))
+#Sample size 14,944
+wave3 <- subset2_w3 #Sample size wave3 14,944
+```
+
+```{r}
+data2010_2016 <- rbind(wave1, wave2, wave3) #Sample size 54,187
+
+
+
+```
+
