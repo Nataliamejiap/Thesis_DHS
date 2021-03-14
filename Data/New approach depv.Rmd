@@ -73,7 +73,9 @@ data2013$level_educ <- as.factor(data2013$level_educ)
 data2013$level_educ <- fct_collapse(data2013$level_educ,
                                     "0" = c("1", "2","3"),
                                     "1" = c("4", "5", "6", "7", "8",
-                                       "9", "10", "11", "12"))
+                                     "9", "10", "11", "12",
+                                     drop = c("88"))) 
+
 #In wave 3
 data2016$level_educ <- as.factor(data2016$level_educ)
 
@@ -81,7 +83,9 @@ data2016$level_educ <- fct_collapse(data2016$level_educ,
                                     "0" = c("1", "2","3"),
                                     "1" = c("4", "5", "6", "7", "8",
                                        "9", "10", "11", "12"))
+
 #Recoding variable dad_house
+
 
 data2010$dad_house <- as.factor(data2010$dad_house)
 
@@ -90,68 +94,71 @@ data2010$dad_house <- fct_collapse(data2010$dad_house,
                                    "0" = c("2"),
                                    "9" = c("3")) 
 
-
 data2013$dad_house <- as.factor(data2013$dad_house)
 
 data2013$dad_house <- fct_collapse(data2013$dad_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
-                                   "9" = c("3")) 
+                                   "9" = c("3"),
+                                   "Other" = c("8"))
 
 data2016$dad_house <- as.factor(data2016$dad_house)
 
 data2016$dad_house <- fct_collapse(data2016$dad_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
-                                   "9" = c("3"))
+                                   "9" = c("3"),
+                                   "Other" = c("8"))
 
-#Recoding variable mom_house
 
 data2010$mom_house <- as.factor(data2010$mom_house)
+
 
 data2010$mom_house <- fct_collapse(data2010$mom_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
                                    "9" = c("3")) 
 
-
 data2013$mom_house <- as.factor(data2013$mom_house)
 
 data2013$mom_house <- fct_collapse(data2013$mom_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
-                                   "9" = c("3")) 
+                                   "9" = c("3"),
+                                   "Other" = c("8")) 
 
 data2016$mom_house <- as.factor(data2016$mom_house)
 
 data2016$mom_house <- fct_collapse(data2016$mom_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
-                                   "9" = c("3")) 
-
-
-#Recoding variable edu_dad
+                                   "9" = c("3"),
+                                   "Other" = c("8")) 
+#Recoding variable educ_dad
 
 data2010$educ_dad <- as.factor(data2010$educ_dad)
+
+
 data2010$educ_dad <- fct_collapse(data2010$educ_dad,
                                   "0" = c("1"),
                                   "1" = c("2"),
                                   "2" = c("3"),
                                   "3" = c("4"),
-                                  "4" = c("5", "6"),
+                                  "4"= c("5", "6"),
                                   "5" = c("7", "8"),
-                                  "6" = c("9"))
+                                  "6" = c("9"),
+                                  "7" = c("98", "99")) 
 
 data2010$educ_dad <- factor(data2010$educ_dad,
-                            levels = c(0,1,2,3,4,5,6),
+                            levels = c(0,1,2,3,4,5,6,7),
                             labels = c("Level 0", 
                                        "Level 1_Primary",
                                        "Level 2_Lower secondary educ",
                                        "Level 3_Upper secondary educ",
                                        "Level 4_Post secondary non-tertiary educ",
                                        "Tertiary edu",
-                                       "None"))
-
+                                       "None",
+                                       "Other"))
 
 data2013$educ_dad <- as.factor(data2013$educ_dad)
 data2013$educ_dad <- fct_collapse(data2013$educ_dad,
@@ -161,19 +168,22 @@ data2013$educ_dad <- fct_collapse(data2013$educ_dad,
                                   "3" = c("4"),
                                   "4" = c("5", "6"),
                                   "5" = c("7", "8"),
-                                  "6" = c("9"))
-
+                                  "6" = c("9"),
+                                  "88" = c("88", "10"))
+                                  
 data2013$educ_dad <- factor(data2013$educ_dad,
-                            levels = c(0,1,2,3,4,5,6),
+                            levels = c(0,1,2,3,4,5,6,88),
                             labels = c("Level 0", 
                                        "Level 1_Primary",
                                        "Level 2_Lower secondary educ",
                                        "Level 3_Upper secondary educ",
                                        "Level 4_Post secondary non-tertiary educ",
                                        "Tertiary edu",
-                                       "None"))
+                                       "None",
+                                       "Other"))
 
 data2016$educ_dad <- as.factor(data2016$educ_dad)
+
 data2016$educ_dad <- fct_collapse(data2016$educ_dad,
                                   "0" = c("1"),
                                   "1" = c("2"),
@@ -181,39 +191,46 @@ data2016$educ_dad <- fct_collapse(data2016$educ_dad,
                                   "3" = c("4"),
                                   "4" = c("5", "6"),
                                   "5" = c("7", "8"),
-                                  "6" = c("9"))
+                                  "6" = c("9"),
+                                  "99" = c("10"))
 
 data2016$educ_dad <- factor(data2016$educ_dad,
-                            levels = c(0,1,2,3,4,5,6),
+                            levels = c(0,1,2,3,4,5,6, 99),
                             labels = c("Level 0", 
                                        "Level 1_Primary",
                                        "Level 2_Lower secondary educ",
                                        "Level 3_Upper secondary educ",
                                        "Level 4_Post secondary non-tertiary educ",
                                        "Tertiary edu",
-                                       "None"))
+                                       "None",
+                                       "Other"))
                                   
 #Recoding variable edu_mom
 
 data2010$educ_mom <- as.factor(data2010$educ_mom)
+
+
 data2010$educ_mom <- fct_collapse(data2010$educ_mom,
                                   "0" = c("1"),
                                   "1" = c("2"),
                                   "2" = c("3"),
                                   "3" = c("4"),
-                                  "4" = c("5", "6"),
+                                  "4"= c("5", "6"),
                                   "5" = c("7", "8"),
-                                  "6" = c("9"))
+                                  "6" = c("9"),
+                                  "7" = c("98", "99")) 
 
 data2010$educ_mom <- factor(data2010$educ_mom,
-                            levels = c(0,1,2,3,4,5,6),
+                            levels = c(0,1,2,3,4,5,6,7),
                             labels = c("Level 0", 
                                        "Level 1_Primary",
                                        "Level 2_Lower secondary educ",
                                        "Level 3_Upper secondary educ",
                                        "Level 4_Post secondary non-tertiary educ",
                                        "Tertiary edu",
-                                       "None"))
+                                       "None",
+                                       "Other"))
+
 
 data2013$educ_mom <- as.factor(data2013$educ_mom)
 data2013$educ_mom <- fct_collapse(data2013$educ_mom,
@@ -223,20 +240,23 @@ data2013$educ_mom <- fct_collapse(data2013$educ_mom,
                                   "3" = c("4"),
                                   "4" = c("5", "6"),
                                   "5" = c("7", "8"),
-                                  "6" = c("9"))
-
+                                  "6" = c("9"),
+                                  "88" = c("88", "10"))
+                                  
 data2013$educ_mom <- factor(data2013$educ_mom,
-                            levels = c(0,1,2,3,4,5,6),
+                            levels = c(0,1,2,3,4,5,6,88),
                             labels = c("Level 0", 
                                        "Level 1_Primary",
                                        "Level 2_Lower secondary educ",
                                        "Level 3_Upper secondary educ",
                                        "Level 4_Post secondary non-tertiary educ",
                                        "Tertiary edu",
-                                       "None"))
+                                       "None",
+                                       "Other"))
 
 
 data2016$educ_mom <- as.factor(data2016$educ_mom)
+
 data2016$educ_mom <- fct_collapse(data2016$educ_mom,
                                   "0" = c("1"),
                                   "1" = c("2"),
@@ -244,17 +264,19 @@ data2016$educ_mom <- fct_collapse(data2016$educ_mom,
                                   "3" = c("4"),
                                   "4" = c("5", "6"),
                                   "5" = c("7", "8"),
-                                  "6" = c("9"))
+                                  "6" = c("9"),
+                                  "99" = c("10"))
 
 data2016$educ_mom <- factor(data2016$educ_mom,
-                            levels = c(0,1,2,3,4,5,6),
+                            levels = c(0,1,2,3,4,5,6,99),
                             labels = c("Level 0", 
                                        "Level 1_Primary",
                                        "Level 2_Lower secondary educ",
                                        "Level 3_Upper secondary educ",
                                        "Level 4_Post secondary non-tertiary educ",
                                        "Tertiary edu",
-                                       "None"))
+                                       "None",
+                                       "Other"))
               
 ```
 
@@ -328,23 +350,23 @@ data2010_2016 <- rbind(wave1, wave2, wave3) #Sample size 54,187
 subset1 <- subset(data2010_2016, !is.na(level_educ))
 #Sample size 19,977
 
-#Subset the data to ages between 5 and 16(compulsory education in Colombia)
-subset2 <- subset(subset1, age > 18)
-#Sample size 19,213
+#Subset the data to age 18+
 
-#Eliminate level 88 cases from variable level_educ
-
-subset3 <- subset(subset2, level_educ != 88)
-#Sample size 19,205
+subset2 <- subset(subset1, age >= 18)
+#Sample size 19,449
 
 #Remove NA´s from educ_dad
-subset4 <- subset(subset3, !is.na(educ_dad))
+subset3 <- subset(subset2, !is.na(educ_dad))
+#Sample 8,036
 
-#Remove NA´s from wduc_mom
+#Remove NA´s from educ_mom
 
-subset5 <- subset(subset4, !is.na(educ_mom))
+subset4 <- subset(subset3, !is.na(educ_mom))
+#Sample 7,554
 
-data01 <- subset5
+data01 <- subset4
+
+summary(subset2$mom_house)
 
 ```
 
@@ -353,19 +375,86 @@ freq_depv <- data01 %>%
   count(level_educ) %>%
   mutate("%" = n / sum(n) *100) %>%
   mutate_at(3, round, 2) %>%
-  kable(caption = "Descriptive statistics of level education)", 
+  kable(caption = "Descriptive statistics of level education", 
         align = "c") %>%  kable_styling(bootstrap_options = c("striped", "hover"))
 freq_depv
 ```
+
+
 ```{r}
+#Table educ_dad (count and variation)
+
+freq_dad <- data01 %>% 
+  count(educ_dad) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of father´s level of education variable(educ_dad)", 
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+freq_dad
+```
+
+
+
+
+
+```{r}
+#Table educ mom (count and variation)
+freq_mom <- data01 %>% 
+  count(educ_mom) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of mother´s level of education (educ_mom)", 
+        align = "c") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+freq_mom
+
+```
+
+```{r}
+#Cross tables level_educ & educ_mom and educ_dad
 
 level_educ1 <- prop.table(table(data01$educ_mom, data01$level_educ),2)*100
+level_educ2 <- prop.table(table(data01$educ_dad, data01$level_educ),2)*100
 
 level_educ1 %>%
-  kable(caption = "Cross tabulation of level of education of the father and individuals attending school, column %",
+  kable(caption = "Cross tabulation of level of education of the mother and level of education of individual, column %",
+        col.names = c("level_educ = 0", "level_educ = 1"),
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 
+level_educ2 %>%
+  kable(caption = "Cross tabulation of level of education of the father and individuals attending school, column %",
+        col.names = c("level_educ = 0", "level_educ = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+
+```{r}
+#Table dad_house (count and variation)
+dad_house <- data01 %>% 
+  count(dad_house) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of father living in the househol(dad_house)", 
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+dad_house
+
+```
+```{r}
+#Table mom_house (count and variation)
+
+mom_house <- subset2 %>% 
+  count(mom_house) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2) %>%
+  kable(caption = "Descriptive statistics of mother living in the househol(mom_house)", 
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+mom_house
 ```
 
 
