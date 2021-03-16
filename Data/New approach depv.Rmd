@@ -84,56 +84,62 @@ data2016$level_educ <- fct_collapse(data2016$level_educ,
                                     "1" = c("4", "5", "6", "7", "8",
                                        "9", "10", "11", "12"))
 
+
 #Recoding variable dad_house
 
-
 data2010$dad_house <- as.factor(data2010$dad_house)
-
+ 
 data2010$dad_house <- fct_collapse(data2010$dad_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
-                                   "9" = c("3")) 
+                                   "3" = c("3"),
+                                   "No info" = c("9")) 
+
 
 data2013$dad_house <- as.factor(data2013$dad_house)
 
 data2013$dad_house <- fct_collapse(data2013$dad_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
-                                   "9" = c("3"),
-                                   "Other" = c("8"))
+                                   "3" = c("3"),
+                                   "No info" = c("8")) 
 
 data2016$dad_house <- as.factor(data2016$dad_house)
 
 data2016$dad_house <- fct_collapse(data2016$dad_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
-                                   "9" = c("3"),
-                                   "Other" = c("8"))
+                                   "3" = c("3"),
+                                   "No info" = "8") 
 
+
+#Recoding variable mom_house
 
 data2010$mom_house <- as.factor(data2010$mom_house)
-
-
+ 
 data2010$mom_house <- fct_collapse(data2010$mom_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
-                                   "9" = c("3")) 
+                                   "3" = c("3"),
+                                   "No info" = c("9")) 
+
 
 data2013$mom_house <- as.factor(data2013$mom_house)
 
 data2013$mom_house <- fct_collapse(data2013$mom_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
-                                   "9" = c("3"),
-                                   "Other" = c("8")) 
+                                   "3" = c("3"),
+                                   "No info" = c("8")) 
 
 data2016$mom_house <- as.factor(data2016$mom_house)
 
 data2016$mom_house <- fct_collapse(data2016$mom_house,
                                    "1" = c("1"),
                                    "0" = c("2"),
-                                   "9" = c("3"),
-                                   "Other" = c("8")) 
+                                   "3" = c("3"),
+                                   "No info" = "8")
+
 #Recoding variable educ_dad
 
 data2010$educ_dad <- as.factor(data2010$educ_dad)
