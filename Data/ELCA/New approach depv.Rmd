@@ -30,6 +30,8 @@ library(knitr)
 library(expss)
 library(forcats)
 library(devtools)
+
+options(knitr.table.format = "html") 
 ```
 
 ```{r}
@@ -428,25 +430,12 @@ freq_depv <- data01 %>%
   mutate("%" = n / sum(n) *100) %>%
   mutate_at(3, round, 2) %>%
   kable(caption = "Descriptive statistics of level education", 
-        align = "c") %>%  kable_styling(bootstrap_options = c("striped", "hover"))
+        align = "c") %>%
+  kable_styling(latex_options = c("repeat_header"))
+
+
 freq_depv
 ```
-
-```{r}
-DATA <- data.frame("Level of education" = c("No sufficient school degree", "Sufficient school degree"), "N" = c(6767, 15399), "Percentage" = c(30.5, 69.5))
-
-DATA %>% kbl(caption = "Table 1. Descriptive statistics dependen and independent variables") %>%
-  kable_classic(full_width = F, html_font = "Cambria")
-
-
-
-
-
-```
-
-
-
-
 
 ```{r}
 #Table educ_dad (count and variation)
@@ -458,6 +447,7 @@ freq_dad <- data01 %>%
   kable(caption = "Descriptive statistics of father´s level of education variable(educ_dad)", 
         align = "c") %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
+
 freq_dad
 ```
 
@@ -531,6 +521,38 @@ mom_house <- data01 %>%
 mom_house
 ```
 
+```{r}
+#Crosstab mom house and dep variable
+
+mom_level <- prop.table(table(data01$mom_house, data01$level_educ),2)*100
+
+mom_level %>%
+  kable(caption = "Cross tabulation of stucture of family-mother and level of education individuals, column %",
+        col.names = c("level_educ = 0", "level_educ = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+
+
+```
+
+
+```{r}
+#Crosstab dad house and dep variable
+
+dad_level <- prop.table(table(data01$dad_house, data01$level_educ),2)*100
+
+dad_level %>%
+  kable(caption = "Cross tabulation of stucture of family-father and level of education individuals, column %",
+        col.names = c("level_educ = 0", "level_educ = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
+
+
+
+
 
 ```{r}
 #Table for socioeconomic stratum (count and variation)
@@ -545,17 +567,181 @@ stratum
 ```
 
 ```{r}
-#Getting the datasets
+#Cross tab socioeconomic status and dependent variable
 
-household2010_raw <- read_dta("hogar2010.dta") #Sample size 5,275 observations
-
-subset_house1 <- subset(household2010_raw, select = c("estrato", "consecutivo")) 
-
-household2010 <- subset_house1 %>%
-  rename(strata = estrato)
+stratum1 <- prop.table(table(data01$strata, data01$level_educ),2)*100
 
 
-data01 <- left_join(data, household2010, by = "consecutivo")
+stratum1 %>%
+  kable(caption = "Cross tabulation of socioeconomic stratum and attendance to school, column %",
+        col.names = c("level_educ = 0", "level_educ = 1"),
+        align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+
+
+
+
+```
+
+```{r}
+#Creating table descriptive statistics dep and indep variables
+
+dependev <- data.frame("Variables" = c("No sufficient school degree", "Sufficient school degree"), "N" = c(6767, 15399), "Percentage" = c(30.5, 69.5))
+
+father_edu <- data.frame("Variables" =
+                            c("Level 0", 
+                              "Level 1_Primary", 
+                              "Level 2_Lower secondary educ",
+                              "Level 3_ Upper secondary educ",
+                              "Level 4_Post secondary non-tertiary educ",
+                              "Tertiary educ",
+                              "None",
+                              "Other",
+                              "No info"),
+                          "N" = c(2460, 1767,393,490,131,166,1607,1022,14130),
+                          "Percentage" = c(11,7.9,1.7,2.2,0.6,0.7,7.2,4.6,63.4))
+mother_edu <- data.frame("Variables" = 
+                            c("Level 0", 
+                              "Level 1_Primary", 
+                              "Level 2_Lower secondary educ",
+                              "Level 3_ Upper secondary educ",
+                              "Level 4_Post secondary non-tertiary educ",
+                              "Tertiary educ",
+                              "None",
+                              "Other",
+                              "No info"),
+                          "N" = c(2551,1816,476,468,95,69,1797,399,14495),
+                          "Percentage"=c(11.5,8.2,2.2,2.1,0.4,0.3,8.1,1.8,65.4))
+
+
+father_house <- data.frame("Variables" =
+                             c("Absent",
+                               "In household",
+                               "Dead",
+                               "No info"),
+                           "N" = c(10001,2495,9577,93),
+                           "Percentage" = c(45.1,11.3,43.2,0.4))
+
+mother_house <- data.frame("Variables" =
+                             c("Absent",
+                               "In household",
+                               "Dead",
+                               "No info"),
+                           "N" = c(11282,4705,6093,86),
+                           "Percentage" = c(50.9,21.23,27.4,0.39))
+
+strata <- data.frame("Variables" =
+                       c("Strata 1",
+                         "Strata 2",
+                         "Strata 3",
+                         "Strata 4",
+                         "No info"),
+                     "N" = c(6258,8567,5507,925,909),
+                     "Percentage" = c(28.2,38.6,24.8,4.2,4.1))
+
+
+DATA <- rbind(dependev, father_edu, mother_edu,father_house,mother_house,strata)
+
+kbl(DATA, 
+    booktabs = T,
+    caption = "Table 1. Descriptive statistics dependent and independent variables") %>%
+  pack_rows("Level of education", 1, 3) %>%
+  pack_rows("Education father", 3, 11) %>%
+  pack_rows("Education mother", 12, 20) %>%
+  pack_rows("Family structure-Father", 21, 24) %>%
+  pack_rows("Family structure-Mother", 25,28) %>%
+  pack_rows("Socioeconomic status", 29,33) %>%
+  kable_classic(full_width = F, html_font = "Cambria") 
+
+```
+
+```{r}
+father_edu1 <- data.frame("Independent variables" =
+                            c("Level 0", 
+                              "Level 1_Primary", 
+                              "Level 2_Lower secondary educ",
+                              "Level 3_ Upper secondary educ",
+                              "Level 4_Post secondary non-tertiary educ",
+                              "Tertiary educ",
+                              "None",
+                              "Other",
+                              "No info"),
+                          "No sufficient school level" = 
+                            c(14,6.5,0.5,0.6,0.04,0.13,13.4,7.2,57.6),
+                          "Sufficient school level" = 
+                            c(9.8,8.6,2.3,3,0.8,1,4.5,3.5,66.4))
+
+mother_edu1 <- data.frame("Independent variables" =
+                            c("Level 0", 
+                              "Level 1_Primary", 
+                              "Level 2_Lower secondary educ",
+                              "Level 3_ Upper secondary educ",
+                              "Level 4_Post secondary non-tertiary educ",
+                              "Tertiary educ",
+                              "None",
+                              "Other",
+                              "No info"),
+                          "No sufficient school level" = 
+                            c(15.1,6.2,0.8,0.3,0.07,0.1,15.4,2.8,59),
+                          "Sufficient school level" = 
+                            c(9.9,9.1,2.7,2.8,0.6,0.4,4.8,1.3,68.2))
+
+
+father_house1 <- data.frame("Independent variables" =
+                             c("Absent",
+                               "In household",
+                               "Dead",
+                               "No info"),
+                           "No sufficient school level" = 
+                             c(34.8,4.3,60.2,0.7),
+                           "Sufficient school level" = 
+                             c(50,14.3,35.7,0.3))
+
+
+mother_house1 <- data.frame("Independent variables" =
+                             c("Absent",
+                               "In household",
+                               "Dead",
+                               "No info"),
+                           "No sufficient school level" = 
+                             c(45.1,9.9,44.3,0.6),
+                           "Sufficient school level" = 
+                             c(53.4,26.2,20.1,0.3))
+
+
+strata1 <- data.frame("Independent variables" =
+                        c("Strata 1",
+                         "Strata 2",
+                         "Strata 3",
+                         "Strata 4",
+                         "No info"),
+                      "No sufficient school level" =
+                        c(40,37,16,1.4,5.5),
+                     "Sufficient school level" = 
+                       c(23,39,28,5.3,3.4))
+
+size <- data.frame("Independent variables" =
+                     c("Sample size"),
+                   "No sufficient school level" =
+                     c("6,767"),
+                   "Sufficient school level" =
+                     c("15,399"))
+
+DATA1 <- rbind(father_edu1, mother_edu1,father_house1,mother_house1,strata1, size)
+
+
+
+kbl(DATA1, 
+    booktabs = T,
+    caption = "Table 2. Cross tabulations level of education and independent variables, column in %") %>%
+  pack_rows("Education father", 1, 9) %>%
+  pack_rows("Education mother", 10, 18) %>%
+  pack_rows("Family structure-Father", 19, 22) %>%
+  pack_rows("Family structure-Mother", 23,26) %>%
+  pack_rows("Socioeconomic status", 27,31) %>%
+  kable_classic(full_width = F, html_font = "Cambria") 
+
 
 ```
 

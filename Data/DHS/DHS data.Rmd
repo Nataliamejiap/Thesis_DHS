@@ -1,0 +1,113 @@
+---
+title: "DHS data"
+author: "Natalia Mejia"
+date: "23/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Required packages
+
+library(dplyr)
+library(haven)
+library(xtable)
+library(plm)
+library(pglm)
+library(broom)
+library(knitr) 
+library(tidyverse)
+library(tidyr)
+library(haven)
+library(stargazer)
+library(kableExtra)
+library(knitr)
+library(expss)
+library(forcats)
+library(devtools)
+```
+
+```{r}
+#Getting datasets
+
+setwd("C:/Users/natim/Desktop/Thesis/Thesis2/Data/DHS")
+
+women <-  read_dta("women.dta")
+men <- read_dta("men.dta")
+household <- read_dta("household.dta")
+
+```
+
+```{r}
+
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+getwd()
+setwd("C:/Users/natim/Desktop/Bases de datos/DHS datasets/CO_2015_DHS_11232020_225_155800/COIR72FL")
+
+
+children <- read_dta("COKR72FL.dta")
+
+household <- read_dta("COHR72FL.dta")
+
+women <-  read_dta("COIR72FL.dta")
+
+
+
+summary(children$v012)
+
+table(household$hv009)
+table(household$hv121_01)
+summary(household$hc61)
+
+
+houselhold_subset1 <- subset(household, 
+                 select = c(hhid,
+                            hv002,
+                            hv009,
+                            sh68ab,
+                            hv105_01, 
+                            hv121_01))
+
+subset2 <- subset(subset1, hv105_01 >= 5 & <= 16)
+
+summary(subset2$hv129_01)
+
+children_subset1 <- subset(children, select = c(caseid,
+                                                       v002,
+                                                       v012,
+                                                       v106,
+                                                       v107,
+                                                       v133,
+                                                       v149,
+                                                       v218,
+                                                         b8,
+                                                      s106a,
+                                                s106b,
+                                                s109,
+                                                s110,
+                                                s111,
+                                                s112,
+                                                s113,
+                                                s115,
+                                                s116))
+                                                       
+
+table(children_subset$v106)
+```
+
