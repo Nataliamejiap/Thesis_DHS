@@ -28,6 +28,7 @@ library(knitr)
 library(expss)
 library(forcats)
 library(devtools)
+library(questionr)
 ```
 
 ```{r}
@@ -42,7 +43,128 @@ household <- read_dta("household.dta")
 ```
 
 ```{r}
+#Getting the variables of interest
 
+women1 <- subset(women, select = c(caseid,
+                                                       v002,
+                                                       v012,
+                                                       v106,
+                                                       v107,
+                                                       v133,
+                                                       v149,
+                                                       v218,
+                                                      s106a,
+                                                s106b,
+                                                s109,
+                                                s110,
+                                                s111,
+                                                s112,
+                                                s113,
+                                                s115,
+                                                s116))
+
+lookfor(women, "school", "attended")
+
+subset1 <- subset(women1, v012 >= 18)
+
+table(subset1$v133)
+table(subset1$v149)
+table(household$hv002)
+
+
+
+household1 <- subset(household, select = c(hhid,
+                                           hv002,
+                                           hv101_01,
+                                           hv101_02,
+                                           hv101_03,
+                                           hv101_04,
+                                           hv101_05,
+                                           hv101_06,
+                                           hv101_07,
+                                           hv101_08,
+                                           hv101_09,
+                                           hv101_10,
+                                           hv101_11,
+                                           hv101_12,
+                                           hv101_13,
+                                           hv101_14,
+                                           hv101_15,
+                                           hv101_16,
+                                           hv101_17,
+                                           hv101_18,
+                                           hv101_19,
+                                           hv101_20,
+                                           hv101_21,
+                                           hv105_01,
+                                           hv105_02,
+                                           hv105_03,
+                                           hv105_04,
+                                           hv105_05,
+                                           hv105_06,
+                                           hv105_07,
+                                           hv105_08,
+                                           hv105_09,
+                                           hv105_10,
+                                           hv105_11,
+                                           hv105_12,
+                                           hv105_13,
+                                           hv105_14,
+                                           hv105_15,
+                                           hv105_16,
+                                           hv105_17,
+                                           hv105_18,
+                                           hv105_19,
+                                           hv105_20,
+                                           hv105_21,
+                                           hv129_01,
+                                           hv129_02,
+                                           hv129_03,
+                                           hv129_04,
+                                           hv129_05,
+                                           hv129_06,
+                                           hv129_07,
+                                           hv129_08,
+                                           hv129_09,
+                                           hv129_10,
+                                           hv129_11,
+                                           hv129_12,
+                                           hv129_13,
+                                           hv129_14,
+                                           hv129_15,
+                                           hv129_16,
+                                           hv129_17,
+                                           hv129_18,
+                                           hv129_19,
+                                           hv129_20,
+                                           hv129_21))
+                     
+
+
+data01 <- gather(household1, Age1, age, hv105_01:hv105_21)
+subset1 <- subset(data01, select = c(hhid,
+                                     age))
+
+data02 <- gather(household1,School, school_status, hv129_01:hv129_21)
+subset2 <- subset(data02, select =c(school_status))
+
+data03 <- gather(household1, Head, relationship_to_head, hv101_01:hv101_21)
+subset3 <- subset(data03, select = c(relationship_to_head))
+
+
+data_long <- cbind(subset1, subset3, subset2)
+
+subset00 <- subset(data_long, age >= 5 & age <= 24)
+
+
+crosstab <- prop.table(table(subset00$age, subset00$school_status),2)*100
+
+table(data_long$school_status)
+
+freq_school <- subset00 %>% 
+  count(school_status) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2)
 
 ```
 
@@ -57,23 +179,10 @@ household <- read_dta("household.dta")
 
 ```{r}
 
-getwd()
-setwd("C:/Users/natim/Desktop/Bases de datos/DHS datasets/CO_2015_DHS_11232020_225_155800/COIR72FL")
-
-
-children <- read_dta("COKR72FL.dta")
-
-household <- read_dta("COHR72FL.dta")
-
-women <-  read_dta("COIR72FL.dta")
 
 
 
-summary(children$v012)
 
-table(household$hv009)
-table(household$hv121_01)
-summary(household$hc61)
 
 
 houselhold_subset1 <- subset(household, 
