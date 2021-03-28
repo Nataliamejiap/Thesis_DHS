@@ -29,7 +29,6 @@ library(expss)
 library(forcats)
 library(devtools)
 library(questionr)
-library(crunch)
 ```
 
 ```{r}
@@ -43,207 +42,6 @@ household <- read_dta("household.dta")
 
 ```
 
-
-```{r}
-#FEMALE SAMPLE
-
-#Creating variable gender
-
-women$gender <- "1-Female"
-
-#Creating variable id
-
-women$id <- women$caseid
-
-#Creating variable household id
-
-women$household_id <- women$v002
-
-#Creating variable region
-
-women$region <- women$v101
-
-#Creating variable school status
-
-women$school_status <- women$s109
-
-#Creating variable age
-
-women$age <- women$v012
-
-#Creating variable educational attaintment
-
-women$edu <- women$v149
-
-#Creating the variable type of residence
-
-women$resi <- women$v025
-
-#Creating the female dataset
-
-female_raw <- subset(women, select = c(id,
-                                   household_id,
-                                   gender,
-                                   age,
-                                   region,
-                                   resi,
-                                   school_status,
-                                   edu)) 
-#Sample size 38,718
-
-#Subset the sample to respondents between 12 and 16 years old and respondents age 16 that are no attending school but completed secondary
-
-female <- subset(female_raw, age >= 12 & age <= 16 
-                  & !(age == 16 & edu == 4 & school_status == 0))
-
-#Sample size 5,457
-
-```
-
-
-```{r}
-#MALE SAMPLE
-
-#Creating variable gender
-
-men$gender <- "0-Male"
-
-#Creating variable id
-
-men$id <- men$mcaseid
-
-#Creating variable household id
-
-men$household_id <- men$mv002
-
-#Creating variable region
-
-men$region <- men$mv024
-
-#Creating variable school status
-
-men$school_status <- men$sm109
-
-#Creating variable age
-
-men$age <- men$mv012
-
-#Creating variable educational attaintment
-
-men$edu <- men$mv149
-
-#Creating the variable type of residence
-
-men$resi <- men$mv025
-
-#Creating the female dataset
-
-male_raw <- subset(men, select = c(id,
-                                   household_id,
-                                   gender,
-                                   age,
-                                   region,
-                                   resi,
-                                   school_status,
-                                   edu))
-
-#Subset the sample to respondents between 12 and 16 years old and respondents age 16 that are no attending school but completed secondary
-
-male <- subset(male_raw, age >= 12 & age <= 16 
-                  & !(age == 16 & edu == 4 & school_status == 0))
-
-```
-
-```{r}
-#Join female and male datasets
-
-data01_raw <- rbind(male, female)
-
-data01 <- subset(data01_raw, edu != 5)
-
-#Sample size 10,942
-
-```
-
-
-```{r}
-#Table count and variation school status
-
-freq_school <- data01 %>% 
-  count(school_status) %>%
-  mutate("%" = n / sum(n) *100) %>%
-   mutate_at(3, round, 2) %>%
-  kable(caption = "Table 1. Descriptive statistics of school status", 
-        align = "c") %>% 
-  kable_classic(full_width = F, html_font = "Cambria")
-
-freq_school
-
-```
-
-```{r}
-#Crosstab school_status and age
-
-age<- prop.table(table(data01$age, data01$school_status),2)*100
-
-
-age %>%
-  kable(caption = "Table 2. Cross tabulation of age and school status, column %",
-        col.names = c("school_status = 0", "school_status = 1"),
-        align = "c") %>%
-  kable_classic(full_width = F, html_font = "Cambria")
-
-```
-
-
-```{r}
-#Crosstab school_status and region
-
-region <- prop.table(table(data01$region, data01$school_status),2)*100
-
-
-region %>%
-  kable(caption = "Table 3. Cross tabulation of region and school status, column %",
-        col.names = c("school_status = 0", "school_status = 1"),
-        row.names(data01$region),
-        align = "c") %>%
-  kable_classic(full_width = F, html_font = "Cambria")
-
-
-```
-
-
-```{r}
-#Crosstab school_status and type of residence (urban or rural)
-
-resi <- prop.table(table(data01$resi, data01$school_status),2)*100
-
-
-resi %>%
-  kable(caption = "Table 4. Cross tabulation of type of residence and school status, column %",
-        col.names = c("school_status = 0", "school_status = 1"),
-        align = "c") %>%
-  kable_classic(full_width = F, html_font = "Cambria")
-
-```
-
-
-```{r}
-#Converting variable as factors
-
-data01$school_status <- as.factor(data01$school_status)
-data01$region <- as.factor(data01$region)
-data01$gender <- as.factor(data01$gender)
-data01$age <- as.factor(data01$age)
-data01$resi <-as.factor(data01$resi)
-
-
-
-model <- glm(school_status ~ region + gender + age + resi, data = data01, family = "binomial")
-
-summary(model)
-
-```
 ```{r}
 #Household variables: relationship to head, age of the household member, school attendance status
 
@@ -388,5 +186,109 @@ freq_school <- subset00 %>%
   mutate("%" = n / sum(n) *100) %>%
   mutate_at(3, round, 2)
 
+```
+
+```{r}
+#Getting the variables of interest from women´s dataset
+
+women1 <- subset(women, select = c(caseid,
+                                   v002,
+                                   v012,
+                                   v131,
+                                   v101,
+                                   v106,
+                                   v107,
+                                   v133,
+                                   v149,
+                                   v218,
+                                   s106a,
+                                   s106b,
+                                   s109,
+                                   s110,
+                                   s111,
+                                   s112,
+                                   s113,
+                                   s115,
+                                   s116))
+
+subset1 <- subset(women1, v012 >= 12 & v012 <= 16)
+
+summary(women$s109)
+table(subset1$v149)
+levels(subset1$s109)
+
+
+freq_students <- subset1 %>% 
+  count(s109) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2)
+
+
+age_school <- prop.table(table(subset1$v012, subset1$s109),2)*100
+
+```
+
+```{r}
+
+subset2 <- subset(subset1, s109 == 0)
+
+#Crosstab ethnicity and school status
+ethni_school <- prop.table(table(subset2$v131, subset2$s109),2)*100
+
+```
+```{r}
+#Crosstab region and school status
+
+region_school <- prop.table(table(subset2$v101, subset2$s109),2)*100
+
+```
+```{r}
+#Getting the variables of interest from men´s dataset
+
+men1 <- subset(men, select = c(mcaseid,
+                               mv012,
+                               mv131,
+                               mv101,
+                               mv106,
+                               mv107,
+                               mv133,
+                               mv149,
+                              mv218,
+                              sm106a,
+                              sm106b,
+                              sm109,
+                              sm110,
+                              sm111,
+                              sm112,
+                              sm113,
+                              sm115,
+                              sm116))
+
+
+man_subset1 <- subset(men1, mv012 >= 12 & mv012 <= 16)
+
+
+freq_students1 <- man_subset1 %>% 
+  count(sm109) %>%
+  mutate("%" = n / sum(n) *100) %>%
+  mutate_at(3, round, 2)
+
+
+age_school1 <- prop.table(table(man_subset1$mv012, man_subset1$sm109),2)*100
+
+```
+```{r}
+
+man_subset2 <- subset(man_subset1, sm109 == 0)
+
+#Crosstab ethnicity and school status
+ethni_school1 <- prop.table(table(man_subset2$mv131, man_subset2$sm109),2)*100
+
+```
+
+```{r}
+#Crosstab region and school status
+
+region_school1 <- prop.table(table(man_subset2$mv101, man_subset2$sm109),2)*100
 ```
 
