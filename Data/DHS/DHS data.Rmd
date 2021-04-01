@@ -79,6 +79,19 @@ women$edu <- women$v149
 
 women$resi <- women$v025
 
+#Creating the variable wealth status
+
+women$wealth <- women$v190a
+
+#Creating variable mom marital status
+
+women$mom_marital <- women$s112
+
+#Cresting variable dad marital status
+
+women$dad_marital <- women$s113
+
+
 #Creating the female dataset
 
 female_raw <- subset(women, select = c(id,
@@ -88,7 +101,10 @@ female_raw <- subset(women, select = c(id,
                                    region,
                                    resi,
                                    school_status,
-                                   edu)) 
+                                   edu,
+                                   wealth,
+                                   mom_marital,
+                                   dad_marital)) 
 #Sample size 38,718
 
 #Subset the sample to respondents between 12 and 16 years old and respondents age 16 that are no attending school but completed secondary
@@ -97,6 +113,8 @@ female <- subset(female_raw, age >= 12 & age <= 16
                   & !(age == 16 & edu == 4 & school_status == 0))
 
 #Sample size 5,457
+
+
 
 ```
 
@@ -136,7 +154,19 @@ men$edu <- men$mv149
 
 men$resi <- men$mv025
 
-#Creating the female dataset
+#Creating the variable wealth status
+
+men$wealth <- men$mv190a
+
+#Creating variable mom marital status
+
+men$mom_marital <- men$sm112
+
+#Cresting variable dad marital status
+
+men$dad_marital <- men$sm113
+
+#Creating the male dataset
 
 male_raw <- subset(men, select = c(id,
                                    household_id,
@@ -145,7 +175,10 @@ male_raw <- subset(men, select = c(id,
                                    region,
                                    resi,
                                    school_status,
-                                   edu))
+                                   edu,
+                                   wealth,
+                                   mom_marital,
+                                   dad_marital))
 
 #Subset the sample to respondents between 12 and 16 years old and respondents age 16 that are no attending school but completed secondary
 
@@ -160,6 +193,10 @@ male <- subset(male_raw, age >= 12 & age <= 16
 data01_raw <- rbind(male, female)
 
 data01 <- subset(data01_raw, edu != 5)
+
+save(data01, file = "data01.RData")
+load("data01.RData")
+?save
 
 #Sample size 10,942
 
@@ -244,6 +281,9 @@ model <- glm(school_status ~ region + gender + age + resi, data = data01, family
 summary(model)
 
 ```
+
+
+
 ```{r}
 #Household variables: relationship to head, age of the household member, school attendance status
 

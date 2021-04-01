@@ -36,9 +36,9 @@ library(questionr)
 
 setwd("C:/Users/natim/Desktop/Thesis/Thesis2/Data/DHS")
 
-women <-  read_dta("women.dta")
-men <- read_dta("men.dta")
-household <- read_dta("household.dta")
+#Getting the male-female dataset
+
+load("data01.RData")
 
 ```
 
