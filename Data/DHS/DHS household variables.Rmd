@@ -29,6 +29,7 @@ library(expss)
 library(forcats)
 library(devtools)
 library(questionr)
+library(summarytools)
 ```
 
 ```{r}
@@ -40,255 +41,196 @@ setwd("C:/Users/natim/Desktop/Thesis/Thesis2/Data/DHS")
 
 load("data01.RData")
 
-```
+#Getting household dataset
 
-```{r}
-#Household variables: relationship to head, age of the household member, school attendance status
-
-household1 <- subset(household, select = c(hhid,
-                                           hv002,
-                                           hv101_01,
-                                           hv101_02,
-                                           hv101_03,
-                                           hv101_04,
-                                           hv101_05,
-                                           hv101_06,
-                                           hv101_07,
-                                           hv101_08,
-                                           hv101_09,
-                                           hv101_10,
-                                           hv101_11,
-                                           hv101_12,
-                                           hv101_13,
-                                           hv101_14,
-                                           hv101_15,
-                                           hv101_16,
-                                           hv101_17,
-                                           hv101_18,
-                                           hv101_19,
-                                           hv101_20,
-                                           hv101_21,
-                                           hv105_01,
-                                           hv105_02,
-                                           hv105_03,
-                                           hv105_04,
-                                           hv105_05,
-                                           hv105_06,
-                                           hv105_07,
-                                           hv105_08,
-                                           hv105_09,
-                                           hv105_10,
-                                           hv105_11,
-                                           hv105_12,
-                                           hv105_13,
-                                           hv105_14,
-                                           hv105_15,
-                                           hv105_16,
-                                           hv105_17,
-                                           hv105_18,
-                                           hv105_19,
-                                           hv105_20,
-                                           hv105_21,
-                                           hv129_01,
-                                           hv129_02,
-                                           hv129_03,
-                                           hv129_04,
-                                           hv129_05,
-                                           hv129_06,
-                                           hv129_07,
-                                           hv129_08,
-                                           hv129_09,
-                                           hv129_10,
-                                           hv129_11,
-                                           hv129_12,
-                                           hv129_13,
-                                           hv129_14,
-                                           hv129_15,
-                                           hv129_16,
-                                           hv129_17,
-                                           hv129_18,
-                                           hv129_19,
-                                           hv129_20,
-                                           hv129_21,
-                                           hv106_01,
-                                           hv106_02,
-                                           hv106_03,
-                                           hv106_04,
-                                           hv106_05,
-                                           hv106_06,
-                                           hv106_07,
-                                           hv106_08,
-                                           hv106_09,
-                                           hv106_10,
-                                           hv106_11,
-                                           hv106_12,
-                                           hv106_13,
-                                           hv106_14,
-                                           hv106_15,
-                                           hv106_16,
-                                           hv106_17,
-                                           hv106_18,
-                                           hv106_19,
-                                           hv106_20,
-                                           hv106_21,
-                                           hv104_01,
-                                           hv104_02,
-                                           hv104_03,
-                                           hv104_04,
-                                           hv104_05,
-                                           hv104_06,
-                                           hv104_07,
-                                           hv104_08,
-                                           hv104_09,
-                                           hv104_10,
-                                           hv104_11,
-                                           hv104_12,
-                                           hv104_13,
-                                           hv104_14,
-                                           hv104_15,
-                                           hv104_16,
-                                           hv104_17,
-                                           hv104_18,
-                                           hv104_19,
-                                           hv104_20,
-                                           hv104_21))
-#Getting age in long format
-
-data01 <- gather(household1, Age1, age, hv105_01:hv105_21)
-subset1 <- subset(data01, select = c(hhid,
-                                     age))
-#Getting school status in long format
-data02 <- gather(household1,School, school_status, hv129_01:hv129_21)
-subset2 <- subset(data02, select =c(school_status))
-
-#Getting relationship to head in long format
-data03 <- gather(household1, Head, relationship_to_head, hv101_01:hv101_21)
-subset3 <- subset(data03, select = c(relationship_to_head))
-
-#Getting level of education in long format
-data04 <- gather(household1, Level, level_educ,hv106_01:hv106_21 )
-subset4 <- subset(data04, select = c(level_educ))
-
-#Joining long format datasets
-data_long <- cbind(subset1, subset3, subset2, subset4)
-
-#Subsetting the long format dataset to respondents age 5 to 24
-
-subset00 <- subset(data_long, age >= 18 & age <= 24)
-
-
-crosstab <- prop.table(table(subset00$age, subset00$level_educ),2)*100
-
-table(household$hv106_01)
-
-freq_school <- subset00 %>% 
-  count(level_educ) %>%
-  mutate("%" = n / sum(n) *100) %>%
-  mutate_at(3, round, 2)
+household <- read_dta("household.dta")
 
 ```
 
 ```{r}
-#Getting the variables of interest from women´s dataset
+#HOUSEHOLD SAMPLE
 
-women1 <- subset(women, select = c(caseid,
-                                   v002,
-                                   v012,
-                                   v131,
-                                   v101,
-                                   v106,
-                                   v107,
-                                   v133,
-                                   v149,
-                                   v218,
-                                   s106a,
-                                   s106b,
-                                   s109,
-                                   s110,
-                                   s111,
-                                   s112,
-                                   s113,
-                                   s115,
-                                   s116))
+#Creating variable household id
 
-subset1 <- subset(women1, v012 >= 12 & v012 <= 16)
+household$household_id <- household$hv002
 
-summary(women$s109)
-table(subset1$v149)
-levels(subset1$s109)
+#Creating variable number of household members
 
+household$members <- household$hv009
 
-freq_students <- subset1 %>% 
-  count(s109) %>%
-  mutate("%" = n / sum(n) *100) %>%
-  mutate_at(3, round, 2)
+#Creating variable head of household
+
+household$head <- household$hv101_01
+
+#Creating variable age of head household
+
+household$age_head <- household$hv105_01
+
+#Creating variable education of head household
+
+household$educ_head <- household$hv106_01
+
+household1 <- subset(household, select = c(household_id,
+                                           members,
+                                           head,
+                                           age_head,
+                                           educ_head))
 
 
-age_school <- prop.table(table(subset1$v012, subset1$s109),2)*100
 
 ```
 
+
 ```{r}
+#Merge male-female dataset with data long
 
-subset2 <- subset(subset1, s109 == 0)
-
-#Crosstab ethnicity and school status
-ethni_school <- prop.table(table(subset2$v131, subset2$s109),2)*100
-
-```
-```{r}
-#Crosstab region and school status
-
-region_school <- prop.table(table(subset2$v101, subset2$s109),2)*100
-
-```
-```{r}
-#Getting the variables of interest from men´s dataset
-
-men1 <- subset(men, select = c(mcaseid,
-                               mv012,
-                               mv131,
-                               mv101,
-                               mv106,
-                               mv107,
-                               mv133,
-                               mv149,
-                              mv218,
-                              sm106a,
-                              sm106b,
-                              sm109,
-                              sm110,
-                              sm111,
-                              sm112,
-                              sm113,
-                              sm115,
-                              sm116))
+data01$household_id <- make.unique(as.character(data01$household_id))
+household1$household_id <- make.unique(as.character(household1$household_id))
 
 
-man_subset1 <- subset(men1, mv012 >= 12 & mv012 <= 16)
+final_data <- merge(data01, household1, by.x = "household_id", by.y = "household_id", all.x = TRUE)
 
-
-freq_students1 <- man_subset1 %>% 
-  count(sm109) %>%
-  mutate("%" = n / sum(n) *100) %>%
-  mutate_at(3, round, 2)
-
-
-age_school1 <- prop.table(table(man_subset1$mv012, man_subset1$sm109),2)*100
-
-```
-```{r}
-
-man_subset2 <- subset(man_subset1, sm109 == 0)
-
-#Crosstab ethnicity and school status
-ethni_school1 <- prop.table(table(man_subset2$mv131, man_subset2$sm109),2)*100
+save(final_data, file ="final_data.RData")
 
 ```
 
-```{r}
-#Crosstab region and school status
 
-region_school1 <- prop.table(table(man_subset2$mv101, man_subset2$sm109),2)*100
+```{r}
+#Recoding the variables
+
+#Recode variable region
+
+final_data$region <- factor(final_data$region,
+                            levels = c(1,2,3,4,5,6),
+                            labels = c("1-Atlantic",
+                                       "2-Oriental",
+                                       "3-Bogota",
+                                       "4-Central",
+                                       "5-Pacific",
+                                       "6-Orinoco & Amazonia")) 
+
+#Recode variable type of residence
+
+final_data$resi <- factor(final_data$resi,
+                       levels = c(1,2),
+                       labels = c("1-Urban",
+                                  "2-Rural"))
+
+#Recode variable school status
+
+final_data$school_status <- factor(final_data$school_status,
+                       levels = c(0,1),
+                       labels = c("0-Dropout",
+                                  "1-Attending school"))
+
+#Recode variable wealth status
+
+final_data$wealth <- factor(final_data$wealth,
+                       levels = c(1,2,3,4,5),
+                       labels = c("Poorest",
+                                  "Poor",
+                                  "Middle",
+                                  "Rich",
+                                  "Richest"))
+
+#Recode variable mom marital status
+
+final_data$mom_marital <- factor(final_data$mom_marital,
+                       levels = c(1,2,3,4,5,6,7,8),
+                       labels = c("1-Married",
+                                  "2-Living with partner",
+                                  "3-Separated",
+                                  "4-Divorced",
+                                  "5-Widowed",
+                                  "6-Never in union",
+                                  "7-Dead",
+                                  "8-Does not know"))
+
+#Recode variable dad marital status
+
+final_data$dad_marital <- factor(final_data$dad_marital,
+                       levels = c(1,2,3,4,5,6,7,8),
+                       labels = c("1-Married",
+                                  "2-Living with partner",
+                                  "3-Separated",
+                                  "4-Divorced",
+                                  "5-Widowed",
+                                  "6-Never in union",
+                                  "7-Dead",
+                                 "8-Don´t know"))
+
+
+#Recode variable head household education
+
+final_data$educ_head <- factor(final_data$educ_head,
+                       levels = c(0,1,2,3,8),
+                       labels = c("0-No education",
+                                  "1-Primary",
+                                  "2-Secondary",
+                                  "3-Higher",
+                                  "8-Don´t know"))
+#Recode variable edu
+
+final_data$edu <- factor(final_data$edu,
+                            levels = c(0,1,2,3,4),
+                            labels = c("0-No education", 
+                                       "1-Incomplete primary",
+                                       "2-Complete primary",
+                                       "3-Incomplete secondary",
+                                       "4-Complete secondary"))
+
+#Recode variable years stopped studying
+
+final_data$time_school <- as.factor(final_data$time_school)
+final_data$time_school<- fct_explicit_na(final_data$time_school, na_level = "No info")
+
+#Recode reason left school
+
+final_data$reason_school <- factor(final_data$reason_school,
+                            levels = c(1,2,3,4,5,6,7,8,9,11,96,98),
+                            labels = c("1-Got pregnant", 
+                                       "2-Got married",
+                                       "3-Needed to take care of children",
+                                       "4-Family needed help",
+                                       "5-Couldn´t pay school",
+                                       "6-Needed to earn money",
+                                       "7-Graduated",
+                                       "8-Didn´t want to study",
+                                       "9-Paper work",
+                                       "11-Other",
+                                       "96- Don´t know",
+                                       "98-No info"))
+
+final_data$reason_school<- fct_explicit_na(final_data$reason_school, na_level = "No info")
+
+
+#Recode variable living with
+
+
+final_data$living <- factor(final_data$living,
+                            levels = c(1,2,3,4,5,6,7),
+                            labels = c("1-Biological mother and father", 
+                                       "2-Only biological mother",
+                                       "3-Only biological father",
+                                       "4-Biological mother and step dad",
+                                       "5-Biological dad and step mom",
+                                       "6-Different person to mom and dad",
+                                       "7-Alone"))
+
+final_data$living<- fct_explicit_na(final_data$living, na_level = "No info")
+
+table(final_data$living)
+```
+
+
+```{r}
+
+
+model <- glm(school_status ~ gender + age + resi + educ_head + wealth +living, data = final_data, family = "binomial")
+
+summary(model)
+
+
+
 ```
 

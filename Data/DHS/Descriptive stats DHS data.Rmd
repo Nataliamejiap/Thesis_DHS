@@ -1,0 +1,170 @@
+---
+title: "Descriptive stats DHS data"
+author: "Natalia Mejia"
+date: "2/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+#Required packages
+
+library(dplyr)
+library(haven)
+library(xtable)
+library(plm)
+library(pglm)
+library(broom)
+library(knitr) 
+library(tidyverse)
+library(tidyr)
+library(haven)
+library(stargazer)
+library(kableExtra)
+library(knitr)
+library(expss)
+library(forcats)
+library(devtools)
+library(questionr)
+
+```
+
+```{r}
+
+setwd("C:/Users/natim/Desktop/Thesis/Thesis2/Data/DHS")
+
+#Getting final data
+
+load("final_data.RData")
+
+```
+
+```{r}
+#Summary statistics 
+
+label(final_data$school_status) <- "School status"
+label(final_data$gender) <- "Gender"
+label(final_data$age) <- "Age"
+label(final_data$region) <- "Region"
+label(final_data$resi) <- "Type of residence"
+label(final_data$reason_school) <- "Reason leaving school"
+label(final_data$edu) <- "Level of education"
+label(final_data$wealth) <- "Wealth status"
+label(final_data$living)<- "Currently living with"
+label(final_data$mom_marital) <- "Mom marital status"
+label(final_data$dad_marital) <- "Dad marital status"
+label(final_data$members) <- "Number household members"
+label(final_data$age_head) <- "Age of head household"
+label(final_data$educ_head) <- "Level of education head housesehold"
+
+
+table1(~school_status + gender + age + region + resi + edu + wealth + living + mom_marital + dad_marital + members + age_head + educ_head + reason_school, 
+       data= final_data,
+       caption = "Table 1. Summary statistics main variables",
+       footnote = "Source: DHS Colombia 2015, own estimates")
+```
+
+```{r}
+#Cross tabulation education head and school status
+
+
+head_school <- prop.table(table(final_data$educ_head, final_data$school_status),2)*100
+
+head_school %>%
+  kable(caption = "Cross tabulation head of household education level and school status of the children, column %",
+        col.names = c("Dropout = 0", "Attending school = 1"),
+        align = "c") %>%
+kable_classic(full_width = F, html_font = "Cambria") 
+
+```
+
+```{r}
+#Cross tabulation type of residence and school status 
+
+
+resi_school <- prop.table(table(final_data$resi, final_data$school_status),2)*100
+
+resi_school %>%
+  kable(caption = "Cross tabulation type of residence and school status of the children, column %",
+        col.names = c("Dropout = 0", "Attending school = 1"),
+        align = "c") %>%
+kable_classic(full_width = F, html_font = "Cambria") 
+```
+```{r}
+#Cross tabulation wealth and school status 
+
+wealth_school <- prop.table(table(final_data$wealth, final_data$school_status),2)*100
+
+wealth_school %>%
+  kable(caption = "Cross tabulation wealth status and school status of the children, column %",
+        col.names = c("Dropout = 0", "Attending school = 1"),
+        align = "c") %>%
+kable_classic(full_width = F, html_font = "Cambria") 
+```
+```{r}
+
+#Cross tabulation wealth and school status 
+
+wealth_school <- prop.table(table(final_data$wealth, final_data$school_status),2)*100
+
+wealth_school %>%
+  kable(caption = "Cross tabulation wealth status and school status of the children, column %",
+        col.names = c("Dropout = 0", "Attending school = 1"),
+        align = "c") %>%
+kable_classic(full_width = F, html_font = "Cambria") 
+
+```
+
+```{r}
+#Cross tabulation living status and school status 
+
+living_school <- prop.table(table(final_data$living, final_data$school_status),2)*100
+
+living_school %>%
+  kable(caption = "Cross tabulation living status and school status of the children, column %",
+        col.names = c("Dropout = 0", "Attending school = 1"),
+        align = "c") %>%
+kable_classic(full_width = F, html_font = "Cambria") 
+
+
+```
+```{r}
+#Cross tabulation mom marital status and school status 
+
+mom_school <- prop.table(table(final_data$mom_marital, final_data$school_status),2)*100
+
+mom_school %>%
+  kable(caption = "Cross tabulation mom marital status and school status of the children, column %",
+        col.names = c("Dropout = 0", "Attending school = 1"),
+        align = "c") %>%
+kable_classic(full_width = F, html_font = "Cambria") 
+```
+```{r}
+#Cross tabulation dad marital status and school status 
+
+dad_school <- prop.table(table(final_data$dad_marital, final_data$school_status),2)*100
+
+dad_school %>%
+  kable(caption = "Cross tabulation dad marital status and school status of the children, column %",
+        col.names = c("Dropout = 0", "Attending school = 1"),
+        align = "c") %>%
+kable_classic(full_width = F, html_font = "Cambria") 
+```
+```{r}
+#Cross tabulation number of memebers in the household and school status 
+
+member_school <- prop.table(table(final_data$members, final_data$school_status),2)*100
+
+member_school %>%
+  kable(caption = "Cross tabulation living status and school status of the children, column %",
+        col.names = c("Dropout = 0", "Attending school = 1"),
+        align = "c") %>%
+kable_classic(full_width = F, html_font = "Cambria") 
+
+```
+

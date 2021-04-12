@@ -67,11 +67,23 @@ women$region <- women$v101
 
 women$school_status <- women$s109
 
+#Creating variable time left school
+
+women$time_school <- women$s110
+
+#Creating variable reason left school
+
+women$reason_school <- women$s111
+
+#Creating variable living with
+
+women$living <- women$s118
+
 #Creating variable age
 
 women$age <- women$v012
 
-#Creating variable educational attaintment
+#Creating variable educational attainment
 
 women$edu <- women$v149
 
@@ -101,8 +113,11 @@ female_raw <- subset(women, select = c(id,
                                    region,
                                    resi,
                                    school_status,
+                                   time_school,
+                                   reason_school,
                                    edu,
                                    wealth,
+                                   living,
                                    mom_marital,
                                    dad_marital)) 
 #Sample size 38,718
@@ -113,8 +128,6 @@ female <- subset(female_raw, age >= 12 & age <= 16
                   & !(age == 16 & edu == 4 & school_status == 0))
 
 #Sample size 5,457
-
-
 
 ```
 
@@ -141,6 +154,19 @@ men$region <- men$mv024
 #Creating variable school status
 
 men$school_status <- men$sm109
+
+#Creating variable time left school
+
+men$time_school <- men$sm110
+
+#Creating variable reason left school
+
+men$reason_school <- men$sm111
+
+#Creating variable living with
+
+men$living <- men$sm118
+
 
 #Creating variable age
 
@@ -175,8 +201,11 @@ male_raw <- subset(men, select = c(id,
                                    region,
                                    resi,
                                    school_status,
+                                   time_school,
+                                   reason_school,
                                    edu,
                                    wealth,
+                                   living,
                                    mom_marital,
                                    dad_marital))
 
@@ -185,12 +214,14 @@ male_raw <- subset(men, select = c(id,
 male <- subset(male_raw, age >= 12 & age <= 16 
                   & !(age == 16 & edu == 4 & school_status == 0))
 
+summary(male$reason_school)
+
 ```
 
 ```{r}
 #Join female and male datasets
 
-data01_raw <- rbind(male, female)
+data01_raw <- full_join(male, female)
 
 data01 <- subset(data01_raw, edu != 5)
 
