@@ -30,6 +30,7 @@ library(forcats)
 library(devtools)
 library(questionr)
 library(crunch)
+library(table1)
 ```
 
 ```{r}
