@@ -42,12 +42,18 @@ setwd("C:/Users/natim/Desktop/Thesis/Thesis2/Data/DHS")
 
 #Getting final data
 
+save(final_data, file = "final_data.RData")
+
 load("final_data.RData")
 
 ```
 
 ```{r}
 #Recoding variables
+
+#School status
+
+
 
 #Mom marital status
 
@@ -242,13 +248,7 @@ kbl(DATA,
 
 ```
 
-```{r}
-model <- glm(school_status ~ gender + resi + educ_head + wealth, data = final_data, family = "binomial")
 
-summary(model)
-```
-```{r}
-exp(coef(model))
-```
+
 
 
