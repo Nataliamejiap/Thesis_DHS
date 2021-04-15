@@ -230,7 +230,7 @@ model <- glm(school_status ~ gender + age + resi + educ_head + wealth +living, d
 
 summary(model)
 
-
-
 ```
+
+
 

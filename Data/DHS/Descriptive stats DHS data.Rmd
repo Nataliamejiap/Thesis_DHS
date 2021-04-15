@@ -78,8 +78,15 @@ levels(final_data$dad_marital)
 
 final_data$educ_head <- as.factor(final_data$educ_head)
 
+
+final_data$educ_head <- fct_collapse(final_data$educ_head,
+                                    "0-No education" = c("0-No education", "8-Don´t know"),
+                                    "1-Primary" = c("1-Primary"),
+                                    "2-Secondary" = c("2-Secondary"),
+                                    "3-Higher" = c("3-Higher"))
 final_data <- final_data %>%
   filter(!is.na(educ_head))
+
 
 summary(final_data$educ_head)
 
@@ -190,10 +197,9 @@ head_edu <- data.frame("Variables" =
                             c("0-No education", 
                               "1-Primary", 
                               "2-Secondary",
-                              "3-Higher",
-                              "4-Don´t know"),
-                          "Dropout" = c(15.7, 36.1,32.2,15.2,0.8),
-                          "Attending school" = c(12.1, 33.3, 34.3, 19.6, 0.7))
+                              "3-Higher"),
+                          "Dropout" = c(16.5, 36.1,32.2,15.2),
+                          "Attending school" = c(12.7, 33.3, 34.3, 19.6))
 
 wealth <- data.frame("Variables" = 
                             c("Poorest", 
@@ -228,13 +234,21 @@ kbl(DATA,
     booktabs = T,
     caption = "Table 2. Cross tabulations dependent and independent variables, column %",
     footnote = "Source: DHS Colombia 2015, own estimates") %>%
-  pack_rows("Level of education head household", 1, 5) %>%
-  pack_rows("Wealth status", 6, 10) %>%
-  pack_rows("Mom marital status", 11, 14) %>%
-  pack_rows("Father marital status", 15, 18) %>%
+  pack_rows("Level of education head household", 1, 4) %>%
+  pack_rows("Wealth status", 5, 9) %>%
+  pack_rows("Mom marital status", 10, 13) %>%
+  pack_rows("Father marital status", 14, 17) %>%
   kable_classic(full_width = F, html_font = "Cambria") 
 
 ```
 
+```{r}
+model <- glm(school_status ~ gender + resi + educ_head + wealth, data = final_data, family = "binomial")
+
+summary(model)
+```
+```{r}
+exp(coef(model))
+```
 
 

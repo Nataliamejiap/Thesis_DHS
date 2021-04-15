@@ -125,10 +125,12 @@ female_raw <- subset(women, select = c(id,
 
 #Subset the sample to respondents between 12 and 16 years old and respondents age 16 that are no attending school but completed secondary
 
-female <- subset(female_raw, age >= 12 & age <= 16 
+female <- subset(female_raw, age >= 11 & age <= 16 
                   & !(age == 16 & edu == 4 & school_status == 0))
 
 #Sample size 5,457
+
+
 
 ```
 
@@ -212,7 +214,7 @@ male_raw <- subset(men, select = c(id,
 
 #Subset the sample to respondents between 12 and 16 years old and respondents age 16 that are no attending school but completed secondary
 
-male <- subset(male_raw, age >= 12 & age <= 16 
+male <- subset(male_raw, age >= 11 & age <= 16 
                   & !(age == 16 & edu == 4 & school_status == 0))
 
 summary(male$reason_school)
