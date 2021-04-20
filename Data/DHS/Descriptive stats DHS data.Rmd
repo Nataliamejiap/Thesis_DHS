@@ -51,10 +51,6 @@ load("final_data.RData")
 ```{r}
 #Recoding variables
 
-#School status
-
-
-
 #Mom marital status
 
 final_data$mom_marital <- factor(final_data$mom_marital)
@@ -118,20 +114,20 @@ table1(~ reason_school,
 ```{r}
 #Summary statistics 
 
-label(final_data$school_status) <- "School status"
+label(final_data$dropouts) <- "School dropouts"
 label(final_data$gender) <- "Gender"
 label(final_data$age) <- "Age"
 label(final_data$region) <- "Region"
 label(final_data$resi) <- "Type of residence"
 label(final_data$wealth) <- "Wealth status"
-label(final_data$mom_marital) <- "Mom marital status"
+label(final_data$mom_marital) <- "Mothers´ marital status"
 label(final_data$dad_marital) <- "Dad marital status"
 label(final_data$educ_head) <- "Level of education head household"
 
 
-table1(~school_status + gender + age + region + resi + wealth + mom_marital + dad_marital + educ_head, 
+table1(~dropouts + gender + age + region + resi + wealth + mom_marital + educ_head, 
        data= final_data,
-       caption = "Table 1. Summary statistics main variables",
+       caption = "Table 2. Summary statistics main variables",
        footnote = "Source: DHS Colombia 2015, own estimates")
 ```
 
@@ -139,7 +135,7 @@ table1(~school_status + gender + age + region + resi + wealth + mom_marital + da
 #Cross tabulation education head and school status
 
 
-head_school <- prop.table(table(final_data$educ_head, final_data$school_status),2)*100
+head_school <- prop.table(table(final_data$educ_head, final_data$school_status),1)*100
 
 head_school %>%
   kable(caption = "Cross tabulation head of household education level and school status of the children, column %",
@@ -153,7 +149,7 @@ kable_classic(full_width = F, html_font = "Cambria")
 #Cross tabulation type of residence and school status 
 
 
-resi_school <- prop.table(table(final_data$resi, final_data$school_status),2)*100
+resi_school <- prop.table(table(final_data$resi, final_data$school_status),1)*100
 
 resi_school %>%
   kable(caption = "Cross tabulation type of residence and school status of the children, column %",
@@ -164,7 +160,7 @@ kable_classic(full_width = F, html_font = "Cambria")
 ```{r}
 #Cross tabulation wealth and school status 
 
-wealth_school <- prop.table(table(final_data$wealth, final_data$school_status),2)*100
+wealth_school <- prop.table(table(final_data$wealth, final_data$school_status),1)*100
 
 wealth_school %>%
   kable(caption = "Cross tabulation wealth status and school status of the children, column %",
@@ -176,7 +172,7 @@ kable_classic(full_width = F, html_font = "Cambria")
 ```{r}
 #Cross tabulation mom marital status and school status 
 
-mom_school <- prop.table(table(final_data$mom_marital, final_data$school_status),2)*100
+mom_school <- prop.table(table(final_data$mom_marital, final_data$school_status),1)*100
 
 mom_school %>%
   kable(caption = "Cross tabulation mom marital status and school status of the children, column %",
@@ -187,7 +183,7 @@ kable_classic(full_width = F, html_font = "Cambria")
 ```{r}
 #Cross tabulation dad marital status and school status 
 
-dad_school <- prop.table(table(final_data$dad_marital, final_data$school_status),2)*100
+dad_school <- prop.table(table(final_data$dad_marital, final_data$school_status),1)*100
 
 dad_school %>%
   kable(caption = "Cross tabulation dad marital status and school status of the children, column %",
@@ -204,8 +200,8 @@ head_edu <- data.frame("Variables" =
                               "1-Primary", 
                               "2-Secondary",
                               "3-Higher"),
-                          "Dropout" = c(16.5, 36.1,32.2,15.2),
-                          "Attending school" = c(12.7, 33.3, 34.3, 19.6))
+                          "Dropout" = c(11.1, 9.5,8.2,6.9),
+                          "Attending school" = c(88.9,90.5,91.7,93.1))
 
 wealth <- data.frame("Variables" = 
                             c("Poorest", 
@@ -213,8 +209,8 @@ wealth <- data.frame("Variables" =
                               "Middle",
                               "Rich",
                               "Richest"),
-                          "Dropout" = c(49.3, 23.1, 15, 8.7, 3.8),
-                          "Attending school"=c(37.3, 20.6, 16.9, 14.2, 11.1))
+                          "Dropout" = c(11.3,9.7,7.8,5.6,3.2),
+                          "Attending school"=c(88.7,90.2,92.1,94.4,96.7))
 
 
 mom <- data.frame("Variables" =
@@ -222,8 +218,8 @@ mom <- data.frame("Variables" =
                                "2-Living with partner",
                                "3-Single",
                                "4-Other"),
-                           "Dropout" = c(21.3, 50, 22.3, 6.1),
-                           "Attending school" = c(27.1, 43, 25, 5.1))
+                           "Dropout" = c(7,10.1,8,10.4),
+                           "Attending school" = c(93,89.9,92,89.5))
 
 dad <- data.frame("Variables" =
                              c("1-Married",
@@ -234,16 +230,15 @@ dad <- data.frame("Variables" =
                            "Attending school" = c(28.1, 43.3, 14.5, 14.1))
 
 
-DATA <- rbind(head_edu, wealth, mom, dad)
+DATA <- rbind(head_edu, wealth, mom)
 
 kbl(DATA, 
     booktabs = T,
-    caption = "Table 2. Cross tabulations dependent and independent variables, column %",
+    caption = "Table 3. Cross tabulations dependent and independent variables, column %",
     footnote = "Source: DHS Colombia 2015, own estimates") %>%
   pack_rows("Level of education head household", 1, 4) %>%
   pack_rows("Wealth status", 5, 9) %>%
-  pack_rows("Mom marital status", 10, 13) %>%
-  pack_rows("Father marital status", 14, 17) %>%
+  pack_rows("Mothers´ marital status", 10, 13) %>%
   kable_classic(full_width = F, html_font = "Cambria") 
 
 ```

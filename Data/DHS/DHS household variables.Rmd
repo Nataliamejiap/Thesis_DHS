@@ -116,12 +116,13 @@ final_data$resi <- factor(final_data$resi,
                        labels = c("1-Urban",
                                   "2-Rural"))
 
-#Recode variable school status
+#Recode variable dropouts
 
-final_data$school_status <- factor(final_data$school_status,
+
+final_data$dropouts <- factor(final_data$dropouts,
                        levels = c(0,1),
-                       labels = c("0-Dropout",
-                                  "1-Attending school"))
+                       labels = c("0-Attending school",
+                                  "1-Dropout"))
 
 #Recode variable wealth status
 
@@ -223,14 +224,7 @@ table(final_data$living)
 ```
 
 
-```{r}
 
-
-model <- glm(school_status ~ gender + age + resi + educ_head + wealth +living, data = final_data, family = "binomial")
-
-summary(model)
-
-```
 
 
 

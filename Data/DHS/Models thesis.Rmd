@@ -45,7 +45,7 @@ load("final_data.RData")
 ```{r}
 #Model 1 education head of household and covariates
 
-model1 <- glm(school_status ~ educ_head + gender + resi + region , data = final_data, family = "binomial")
+model1 <- glm(dropouts ~ educ_head + gender + resi + region , data = final_data, family = "binomial")
 
 summary(model1)
 
@@ -54,7 +54,7 @@ exp(coef(model1))
 ```{r}
 #Model 2 socioeconomic status of the household and covariates
 
-model2 <- glm(school_status ~ wealth + gender + resi + region , data = final_data, family = "binomial")
+model2 <- glm(dropouts ~ wealth + gender + resi + region , data = final_data, family = "binomial")
 
 summary(model2)
 
@@ -63,7 +63,7 @@ exp(coef(model2))
 
 ```
 ```{r}
-model3 <- glm(school_status ~ mom_marital + gender + resi + region , data = final_data, family = "binomial")
+model3 <- glm(dropouts ~ mom_marital + gender + resi + region , data = final_data, family = "binomial")
 
 summary(model3)
 
@@ -71,7 +71,7 @@ exp(coef(model3))
 
 ```
 ```{r}
-model4 <- glm(school_status ~ dad_marital + gender + resi + region , data = final_data, family = "binomial")
+model4 <- glm(dropouts ~ dad_marital + gender + resi + region , data = final_data, family = "binomial")
 
 summary(model4)
 
@@ -110,10 +110,10 @@ p.values4 <- list(summary(model4)$coefficients[,4])
 #Plotting
 
 stargazer(model1, model2,model3, model4, coef = list(OR.vector1, OR.vector2, OR.vector3, OR.vector4), 
-          title = "Table 3.  estimates early first childbirth and independent variables",
+          title = "Table 3. Logistic regression estimates school dropouts and independent variables, estimates in odd ratios",
           ci = T,
 ci.custom = list(CI.vector1, CI.vector2, CI.vector3, CI.vector4), single.row = F, type = "text", out = "models.htm",
 p=
-c(p.values1, p.values2, p.values3, p.values4) )
+c(p.values1, p.values2, p.values3, p.values4))
 ```
 

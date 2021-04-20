@@ -123,14 +123,12 @@ female_raw <- subset(women, select = c(id,
                                    dad_marital)) 
 #Sample size 38,718
 
-#Subset the sample to respondents between 12 and 16 years old and respondents age 16 that are no attending school but completed secondary
+#Subset the sample to respondents between 11 and 16 years old and respondents age 16 that are no attending school but completed secondary
 
 female <- subset(female_raw, age >= 11 & age <= 16 
                   & !(age == 16 & edu == 4 & school_status == 0))
 
 #Sample size 5,457
-
-
 
 ```
 
@@ -212,7 +210,7 @@ male_raw <- subset(men, select = c(id,
                                    mom_marital,
                                    dad_marital))
 
-#Subset the sample to respondents between 12 and 16 years old and respondents age 16 that are no attending school but completed secondary
+#Subset the sample to respondents between 11 and 16 years old and respondents age 16 that are no attending school but completed secondary
 
 male <- subset(male_raw, age >= 11 & age <= 16 
                   & !(age == 16 & edu == 4 & school_status == 0))
@@ -227,6 +225,13 @@ summary(male$reason_school)
 data01_raw <- full_join(male, female)
 
 data01 <- subset(data01_raw, edu != 5)
+
+
+#Creating dropout variable and recoding the variable
+
+data01$dropouts[data01$school_status==1] <- 0
+data01$dropouts[data01$school_status==0] <- 1
+
 
 save(data01, file = "data01.RData")
 load("data01.RData")
