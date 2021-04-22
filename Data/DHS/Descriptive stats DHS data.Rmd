@@ -243,7 +243,352 @@ kbl(DATA,
 
 ```
 
+```{r}
+#Model 1 education head of household and covariate 1
 
+model1 <- glm(dropouts ~ educ_head, data = final_data, family = "binomial")
+
+summary(model1)
+
+exp(coef(model1))
+```
+```{r}
+#Model 1 education head of household and covariate 1
+
+model1_cov1 <- glm(dropouts ~ educ_head + gender, data = final_data, family = "binomial")
+
+summary(model1_cov1)
+
+exp(coef(model1_cov1))
+```
+
+```{r}
+
+#Model 1 education head of household and covariate 2
+
+model1_cov2 <- glm(dropouts ~ educ_head + gender + resi, data = final_data, family = "binomial")
+
+summary(model1_cov2)
+
+exp(coef(model1_cov2))
+
+
+```
+
+```{r}
+#Model 1 education head of household and covariate 3
+
+model1_cov3 <- glm(dropouts ~ educ_head + region, data = final_data, family = "binomial")
+
+summary(model1_cov3)
+
+exp(coef(model1_cov3))
+```
+```{r}
+#Model 1 education head of household and all covariates
+
+model1_all <- glm(dropouts ~ educ_head + resi + gender + region, data = final_data, family = "binomial")
+
+summary(model1_all)
+
+exp(coef(model1_all))
+
+```
+
+```{r}
+#Getting odd ratios and confidence intervals of each model to plot them with stargazer
+
+#Model 1
+OR.vector <- exp(coef(model1))
+CI.vector <- exp(confint(model1))
+
+p.values <- list(summary(model1)$coefficients[,4])
+
+
+#Model 1 cov 1
+OR.vector1 <- exp(coef(model1_cov1))
+CI.vector1 <- exp(confint(model1_cov1))
+
+p.values1 <- list(summary(model1_cov1)$coefficients[,4])
+
+#Model 1 cov 2
+OR.vector2 <- exp(coef(model1_cov2))
+CI.vector2 <- exp(confint(model1_cov2))
+
+p.values2 <- list(summary(model1_cov2)$coefficients[,4])
+
+#Model 1 cov 3
+OR.vector3 <- exp(coef(model1_cov3))
+CI.vector3 <- exp(confint(model1_cov3))
+
+p.values3 <- list(summary(model1_cov3)$coefficients[,4])
+
+#Model 1 cov all
+OR.vector4 <- exp(coef(model1_all))
+CI.vector4 <- exp(confint(model1_all))
+
+p.values4 <- list(summary(model1_all)$coefficients[,4])
+
+```
+```{r}
+#Plotting
+
+stargazer(model1, model1_cov1, model1_cov2,model1_cov3, model1_all, coef = list(OR.vector, OR.vector1, OR.vector2, OR.vector3, OR.vector4), 
+          title = "Table 4. Stepwise model estimates school dropouts and education head of the household, estimates in odd ratios",
+          dep.var.labels = "School dropouts",
+          covariate.labels = c("Educ head-Primary",
+                               "Educ head-Secondary",
+                               "Educ head -Higher",
+                               "Gender-Female",
+                               "Type residence-Rural",
+                               "Region-Oriental",
+                               "Region-Bogota",
+                               "Region-Central",
+                               "Region-Pacific",
+                               "Region-Amazonia"),
+          ci = T,
+ci.custom = list(CI.vector, CI.vector1, CI.vector2, CI.vector3, CI.vector4), single.row = F, type = "text", out = "model1.htm",
+notes= c("Reference category Educ head-No education. Reference category Gender: Male. Reference type of residence: Urban.Reference category Region: Atlantic. Source: DHS Colombia 2015, own estimates"),
+          notes.align = "l",
+          notes.append = FALSE,
+p=
+c(p.values, p.values1, p.values2, p.values3, p.values4))
+
+
+```
+
+
+```{r}
+#Model 2 socioeconomic status of the household 
+
+model2 <- glm(dropouts ~ wealth , data = final_data, family = "binomial")
+
+summary(model2)
+
+exp(coef(model2))
+
+```
+
+```{r}
+#Model 2 socioeconomic status of the household and gender
+
+model2_cov1 <- glm(dropouts ~ wealth + gender, data = final_data, family = "binomial")
+
+summary(model2_cov1)
+
+exp(coef(model2_cov1))
+
+```
+
+
+```{r}
+#Model 2 socioeconomic status of the household and type of residence
+
+model2_cov2 <- glm(dropouts ~ wealth + resi, data = final_data, family = "binomial")
+
+summary(model2_cov2)
+
+exp(coef(model2_cov2))
+```
+
+
+```{r}
+#Model 2 socioeconomic status of the household and region
+
+model2_cov3 <- glm(dropouts ~ wealth + region, data = final_data, family = "binomial")
+
+summary(model2_cov3)
+
+exp(coef(model2_cov3))
+
+```
+
+
+```{r}
+#Model 2 socioeconomic status of the household and all covariates
+
+model2_all <- glm(dropouts ~ wealth + gender + resi + region, data = final_data, family = "binomial")
+
+summary(model2_all)
+
+exp(coef(model2_all))
+```
+
+```{r}
+#Getting odd ratios and confidence intervals of each model to plot them with stargazer
+
+#Model 2
+OR.vector_m2 <- exp(coef(model2))
+CI.vector_m2 <- exp(confint(model2))
+
+p.values_m2 <- list(summary(model2)$coefficients[,4])
+
+#Model 2 cov 1
+OR.vector1.1 <- exp(coef(model2_cov1))
+CI.vector1.1 <- exp(confint(model2_cov1))
+
+p.values1.1 <- list(summary(model2_cov1)$coefficients[,4])
+
+#Model 1 cov 2
+OR.vector2.2 <- exp(coef(model2_cov2))
+CI.vector2.2 <- exp(confint(model2_cov2))
+
+p.values2.2 <- list(summary(model2_cov2)$coefficients[,4])
+
+#Model 1 cov 3
+OR.vector3.3 <- exp(coef(model2_cov3))
+CI.vector3.3 <- exp(confint(model2_cov3))
+
+p.values3.3 <- list(summary(model2_cov3)$coefficients[,4])
+
+#Model 1 cov all
+OR.vector4.4 <- exp(coef(model2_all))
+CI.vector4.4 <- exp(confint(model2_all))
+
+p.values4.4 <- list(summary(model2_all)$coefficients[,4])
+
+```
+
+```{r}
+#Plotting
+
+stargazer(model2, model2_cov1, model2_cov2,model2_cov3, model2_all, coef = list(OR.vector_m2, OR.vector1.1, OR.vector2.2, OR.vector3.3, OR.vector4.4), 
+          title = "Table 5. Stepwise model estimates school dropouts and wealth status, estimates in odd ratios",
+          dep.var.labels = "School dropouts",
+          ci = T,
+ci.custom = list(CI.vector_m2, CI.vector1.1, CI.vector2.2, CI.vector3.3, CI.vector4.4), single.row = F, type = "text", out = "model2.htm",
+notes= c("Reference category Wealth stauts: Poorest. Reference category Gender: Male. Reference type of residence: Urban.Reference category Region: Atlantic. Source: DHS Colombia 2015, own estimates"),
+ covariate.labels = c("Wealth status-Poor",
+                               "Wealth status-Middle",
+                               "Wealth status-Rich",
+                      "Wealth status-Richest",
+                               "Gender-Female",
+                               "Type residence-Rural",
+                               "Region-Oriental",
+                               "Region-Bogota",
+                               "Region-Central",
+                               "Region-Pacific",
+                               "Region-Amazonia"),
+          notes.align = "l",
+          notes.append = FALSE,
+p=
+c(p.values_m2, p.values1.1, p.values2.2, p.values3.3, p.values4.4))
+
+
+```
+```{r}
+#Model 3 mothers´ marital status
+
+model3 <- glm(dropouts ~ mom_marital , data = final_data, family = "binomial")
+
+summary(model3)
+
+exp(coef(model3))
+
+```
+
+```{r}
+#Model 3 mothers´ marital status and gender 
+
+model3_cov1 <- glm(dropouts ~ mom_marital + gender, data = final_data, family = "binomial")
+
+summary(model3_cov1)
+
+exp(coef(model3_cov1))
+
+```
+
+```{r}
+#Model 3 mothers´ marital status and type of residence 
+
+model3_cov2 <- glm(dropouts ~ mom_marital + resi, data = final_data, family = "binomial")
+
+summary(model3_cov2)
+
+exp(coef(model3_cov2))
+
+```
+
+```{r}
+#Model 3 mothers´ marital status and type of residence 
+
+model3_cov3 <- glm(dropouts ~ mom_marital + region, data = final_data, family = "binomial")
+
+summary(model3_cov3)
+
+exp(coef(model3_cov3))
+```
+
+```{r}
+#Model 3 mothers´ marital status and type of residence 
+
+model3_all <- glm(dropouts ~ mom_marital +gender + resi + region, data = final_data, family = "binomial")
+
+summary(model3_all)
+
+exp(coef(model3_cov3))
+```
+
+
+```{r}
+#Getting odd ratios and confidence intervals of each model to plot them with stargazer
+
+#Model 3
+OR.vector_m3 <- exp(coef(model3))
+CI.vector_m3 <- exp(confint(model3))
+
+p.values_m3 <- list(summary(model3)$coefficients[,4])
+
+#Model 2 cov 1
+OR.vector1.3 <- exp(coef(model3_cov1))
+CI.vector1.3 <- exp(confint(model3_cov1))
+
+p.values1.3 <- list(summary(model3_cov1)$coefficients[,4])
+
+#Model 1 cov 2
+OR.vector2.3 <- exp(coef(model3_cov2))
+CI.vector2.3 <- exp(confint(model3_cov2))
+
+p.values2.3 <- list(summary(model3_cov2)$coefficients[,4])
+
+#Model 1 cov 3
+OR.vector3.3.3 <- exp(coef(model3_cov3))
+CI.vector3.3.3 <- exp(confint(model3_cov3))
+
+p.values3.3.3 <- list(summary(model3_cov3)$coefficients[,4])
+
+#Model 1 cov all
+OR.vector4.3 <- exp(coef(model3_all))
+CI.vector4.3 <- exp(confint(model3_all))
+
+p.values4.3 <- list(summary(model3_all)$coefficients[,4])
+
+```
+
+
+```{r}
+#Plotting
+
+stargazer(model3, model3_cov1, model3_cov2,model3_cov3, model3_all, coef = list(OR.vector_m3, OR.vector1.3, OR.vector2.3, OR.vector3.3.3, OR.vector4.3), 
+          title = "Table 6. Stepwise model estimates school dropouts and mothers´ marital status, estimates in odd ratios",
+          dep.var.labels = "School dropouts",
+          ci = T,
+ci.custom = list(CI.vector_m3, CI.vector1.3, CI.vector2.3, CI.vector3.3.3, CI.vector4.3), single.row = F, type = "text", out = "model3.htm",
+notes= c("Reference category Marital status: Married. Reference category Gender: Male. Reference type of residence: Urban.Reference category Region: Atlantic. Source: DHS Colombia 2015, own estimates"),
+ covariate.labels = c("Marital status-Living with partner",
+                               "Marital status-Single",
+                               "Marital stauts-Other",
+                               "Gender-Female",
+                               "Type residence-Rural",
+                               "Region-Oriental",
+                               "Region-Bogota",
+                               "Region-Central",
+                               "Region-Pacific",
+                               "Region-Amazonia"),
+          notes.align = "l",
+          notes.append = FALSE,
+p=
+c(p.values_m3, p.values1.3, p.values2.3, p.values3.3.3, p.values4.3))
 
 
 

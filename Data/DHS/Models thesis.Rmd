@@ -31,6 +31,7 @@ library(devtools)
 library(questionr)
 library(crunch)
 library(table1)
+library(ggeffects)
 
 ```
 
@@ -42,78 +43,158 @@ setwd("C:/Users/natim/Desktop/Thesis/Thesis2/Data/DHS")
 load("final_data.RData")
 ```
 
+
 ```{r}
-#Model 1 education head of household and covariates
+#Checking class of variables
 
-model1 <- glm(dropouts ~ educ_head + gender + resi + region , data = final_data, family = "binomial")
-
-summary(model1)
-
-exp(coef(model1))
-```
-```{r}
-#Model 2 socioeconomic status of the household and covariates
-
-model2 <- glm(dropouts ~ wealth + gender + resi + region , data = final_data, family = "binomial")
-
-summary(model2)
-
-exp(coef(model2))
-
+class(final_data$educ_head) #factor
+class(final_data$mom_marital) #factor
+class(final_data$wealth) # factor
+class(final_data$gender)
+final_data$gender <- as.factor(final_data$gender)
+class(final_data$resi)
+class(final_data$region)
+final_data$school_status <- as.factor(final_data$school_status)
+class(final_data$school_status)
 
 ```
+
 ```{r}
-model3 <- glm(dropouts ~ mom_marital + gender + resi + region , data = final_data, family = "binomial")
+model_educ <- glm(dropouts ~ educ_head + gender + resi + region , data = final_data, family = "binomial")
 
-summary(model3)
+summary(model_educ)
 
-exp(coef(model3))
+exp(coef(model_educ))
 
 ```
 ```{r}
-model4 <- glm(dropouts ~ dad_marital + gender + resi + region , data = final_data, family = "binomial")
+model_wealth <- glm(dropouts ~ educ_head + gender + resi + region + wealth  , data = final_data, family = "binomial")
 
-summary(model4)
+summary(model_wealth)
 
-exp(coef(model4))
+exp(coef(model_wealth))
 ```
+
+```{r}
+model_marital <- glm(dropouts ~ educ_head  + gender + resi + region + wealth + mom_marital, data = final_data, family = "binomial")
+
+summary(model_marital)
+
+exp(coef(model_marital))
+```
+
+
+```{r}
+#Creating new interaction variable
+
+final_data$inter <- final_data$educ_head: final_data$mom_marital
+levels(final_data$inter)
+final_data$inter <- relevel(final_data$inter, ref="3-Higher:1-Married")
+
+model_inter <- glm(dropouts ~ gender + resi + region + wealth + inter, data = final_data, family = "binomial")
+
+summary(model_inter)
+
+exp(coef(model_inter))
+
+```
+
 ```{r}
 #Getting odd ratios and confidence intervals of each model to plot them with stargazer
 
-#Model 1
-OR.vector1 <- exp(coef(model1))
-CI.vector1 <- exp(confint(model1))
+#Model head educ
+OR.vector_educ <- exp(coef(model_educ))
+CI.vector_educ <- exp(confint(model_educ))
 
-p.values1 <- list(summary(model1)$coefficients[,4])
+p.values_educ <- list(summary(model_educ)$coefficients[,4])
 
-#Model 2
-OR.vector2 <- exp(coef(model2))
-CI.vector2 <- exp(confint(model2))
+#Model wealth
+OR.vector_w <- exp(coef(model_wealth))
+CI.vector_w <- exp(confint(model_wealth))
 
-p.values2 <- list(summary(model2)$coefficients[,4])
+p.values_w <- list(summary(model_wealth)$coefficients[,4])
 
-#Model 3
-OR.vector3 <- exp(coef(model3))
-CI.vector3 <- exp(confint(model3))
+#Model mothers marital status
+OR.vector_marital <- exp(coef(model_marital))
+CI.vector_marital <- exp(confint(model_marital))
 
-p.values3 <- list(summary(model3)$coefficients[,4])
+p.values_marital <- list(summary(model_marital)$coefficients[,4])
 
-#Model 4
+#Model interaction
+OR.vector_inter <- exp(coef(model_inter))
+CI.vector_inter <- exp(confint(model_inter))
 
-OR.vector4 <- exp(coef(model4))
-CI.vector4 <- exp(confint(model4))
-
-p.values4 <- list(summary(model4)$coefficients[,4])
+p.values_inter <- list(summary(model_inter)$coefficients[,4])
 
 ```
+
 ```{r}
 #Plotting
 
-stargazer(model1, model2,model3, model4, coef = list(OR.vector1, OR.vector2, OR.vector3, OR.vector4), 
-          title = "Table 3. Logistic regression estimates school dropouts and independent variables, estimates in odd ratios",
+stargazer(model_educ, model_wealth,model_marital,model_inter, coef = list(OR.vector_educ, OR.vector_w, OR.vector_marital, OR.vector_inter), 
+          title = "Table 4. Logistic regression estimates school dropouts and independent variables, estimates in odd ratios",
+          dep.var.labels = "School dropouts",
+          notes= c("Rereference category Educ head: No education. Reference category Wealth status: Poorest. Reference category Marital status: Married.Reference category interaction: Higher-Married. Reference category Gender: Male. Reference category type of residence: Urban.Reference category Region: Atlantic. Source: DHS Colombia 2015, own estimates"),
+           covariate.labels = c("Educ head-Primary",
+                      "Educ head-Secondary",
+                      "Educ head-Higher",
+                      "Gender-Female",
+                      "Type residence-Rural",
+                               "Region-Oriental",
+                               "Region-Bogota",
+                               "Region-Central",
+                               "Region-Pacific",
+                               "Region-Amazonia",
+                        "Wealth status-Poor",
+                      "Wealth status-Middle",
+                      "Wealth status-Rich",
+                      "Wealth status-Richest",
+   "Marital status-Living with partner",
+                               "Marital status-Single",
+                               "Marital stauts-Other",
+   "No education-Married",
+   "No education-Living with partner",
+   "No education-Single",
+   "No education-Other",
+   "Primary-Married",
+   "Primary-Living with partner",
+   "Primary-Single",
+   "Primary-Other",
+   "Secondary-Married",
+   "Secondary-Living with partner",
+   "Secondary-Single",
+   "Secondary-Other",
+   "Higher-Living with partner",
+   "Higher-Single",
+   "Higher-Other"),
           ci = T,
-ci.custom = list(CI.vector1, CI.vector2, CI.vector3, CI.vector4), single.row = F, type = "text", out = "models.htm",
+ci.custom = list(CI.vector_educ, CI.vector_w, CI.vector_marital, CI.vector_inter), single.row = F, type = "text", out = "models.htm",
 p=
-c(p.values1, p.values2, p.values3, p.values4))
+c(p.values_educ, p.values_w, p.values_marital, p.values_inter))
+```
+
+```{r}
+#Plotting predicted probabilities
+
+
+extracted_me_con <- ggeffects::ggpredict(m_control_gen, 
+                                     terms = c("rel_income", "traditional_standard [-0.7501003, 0.01455509, 0.7792105, 1.73503]")) 
+
+
+extracted_me_con <- ggeffects::ggpredict(m_control_gen, 
+                                     terms = c("rel_income", "traditional_standard [-0.7501003, 0.01455509, 0.7792105, 1.73503]")) 
+
+extracted_me_con %>% 
+    as_data_frame() %>% 
+    ggplot(aes(x, predicted)) + 
+    geom_point(aes(color = group),
+               position = position_dodge(width = 0.2)) +
+    geom_errorbar(aes(ymin = conf.low, 
+                      ymax = conf.high, 
+                      color = group), 
+                  width = .1,
+                  position = position_dodge(width = 0.2))
+
+
 ```
 
