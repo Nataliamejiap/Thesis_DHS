@@ -32,6 +32,8 @@ library(questionr)
 library(crunch)
 library(table1)
 library(ggeffects)
+library(devtools)
+library(ggplot2)
 
 ```
 
@@ -91,7 +93,7 @@ final_data$inter <- final_data$educ_head: final_data$mom_marital
 levels(final_data$inter)
 final_data$inter <- relevel(final_data$inter, ref="3-Higher:1-Married")
 
-model_inter <- glm(dropouts ~ gender + resi + region + wealth + inter, data = final_data, family = "binomial")
+model_inter <- glm(dropouts ~ gender + resi + region + wealth + educ_head:mom_marital, data = final_data, family = "binomial")
 
 summary(model_inter)
 
@@ -176,16 +178,15 @@ c(p.values_educ, p.values_w, p.values_marital, p.values_inter))
 ```{r}
 #Plotting predicted probabilities
 
+probs <- ggpredict(model_inter, 
+                   terms = c("mom_marital", "educ_head"))
+
 
 extracted_me_con <- ggeffects::ggpredict(m_control_gen, 
                                      terms = c("rel_income", "traditional_standard [-0.7501003, 0.01455509, 0.7792105, 1.73503]")) 
 
-
-extracted_me_con <- ggeffects::ggpredict(m_control_gen, 
-                                     terms = c("rel_income", "traditional_standard [-0.7501003, 0.01455509, 0.7792105, 1.73503]")) 
-
-extracted_me_con %>% 
-    as_data_frame() %>% 
+probs %>% 
+      as_data_frame() %>% 
     ggplot(aes(x, predicted)) + 
     geom_point(aes(color = group),
                position = position_dodge(width = 0.2)) +
@@ -193,7 +194,13 @@ extracted_me_con %>%
                       ymax = conf.high, 
                       color = group), 
                   width = .1,
-                  position = position_dodge(width = 0.2))
+                  position = position_dodge(width = 0.2)) +
+  theme_minimal() +
+  labs(title = "Figure 1. Predicted probabilities of dropouts by mothers´ marital status and interaction of level of education head of household",
+       x = "Mothers´ marital status",
+       y= "Probability of dropout",
+       colour = "Level of education head of household")
+                      
 
 
 ```
