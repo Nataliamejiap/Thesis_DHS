@@ -134,7 +134,6 @@ table1(~dropouts + gender + age + region + resi + wealth + mom_marital + educ_he
 ```{r}
 #Cross tabulation education head and school status
 
-
 head_school <- prop.table(table(final_data$educ_head, final_data$school_status),1)*100
 
 head_school %>%
@@ -147,7 +146,6 @@ kable_classic(full_width = F, html_font = "Cambria")
 
 ```{r}
 #Cross tabulation type of residence and school status 
-
 
 resi_school <- prop.table(table(final_data$resi, final_data$school_status),1)*100
 
@@ -191,6 +189,24 @@ dad_school %>%
         align = "c") %>%
 kable_classic(full_width = F, html_font = "Cambria") 
 ```
+
+```{r}
+#Cross tabulation region and dropouts
+
+region <- prop.table(table(final_data$region, final_data$dropouts),1)*100
+
+region %>%
+  kable(caption = "Cross tabulation region and dropouts, column %",
+  
+        align = "c") %>%
+kable_classic(full_width = F, html_font = "Cambria") 
+```
+
+
+
+
+
+
 ```{r}
 #Creating table cross tabulations dep and indep variables
 
@@ -252,6 +268,7 @@ summary(model1)
 
 exp(coef(model1))
 ```
+
 ```{r}
 #Model 1 education head of household and covariate 1
 
