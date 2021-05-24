@@ -34,6 +34,7 @@ library(table1)
 library(ggeffects)
 library(devtools)
 library(ggplot2)
+library(RColorBrewer)
 
 ```
 
@@ -149,11 +150,25 @@ final_data$inter <- final_data$educ: final_data$mom_marital
 levels(final_data$inter)
 final_data$inter <- relevel(final_data$inter, ref="3-Higher:1-Married")
 
-model_inter <- glm(dropouts ~ gender + resi + region + wealth + inter, data = final_data, family = "binomial")
+model_inter <- glm(dropouts ~ gender + resi + age + wealth + inter, data = final_data, family = "binomial")
 
 summary(model_inter)
 
 exp(coef(model_inter))
+
+
+#Creating new interaction variable 3
+
+final_data$inter3 <- final_data$educ: final_data$mom_marital
+levels(final_data$inter3)
+final_data$inter3 <- relevel(final_data$inter3, ref="3-Higher:1-Married")
+
+model_inter3 <- glm(dropouts ~ gender + resi + age + inter3, data = final_data, family = "binomial")
+
+summary(model_inter3)
+
+exp(coef(model_inter3))
+
 
 ```
 
@@ -165,7 +180,7 @@ levels(final_data$inter2)
 
 final_data$inter2 <- relevel(final_data$inter2, ref="3-Higher:Richest")
 
-model_inter2 <- glm(dropouts ~ gender + resi + region  + mom_marital + inter2, data = final_data, family = "binomial")
+model_inter2 <- glm(dropouts ~ gender + resi + age + mom_marital + inter2, data = final_data, family = "binomial")
 
 summary(model_inter2)
 
@@ -187,75 +202,92 @@ OR.vector_inter2 <- exp(coef(model_inter2))
 CI.vector_inter2 <- exp(confint(model_inter2))
 
 p.values_inter2 <- list(summary(model_inter2)$coefficients[,4])
+
+#Model interaction 2
+OR.vector_inter3 <- exp(coef(model_inter3))
+CI.vector_inter3 <- exp(confint(model_inter3))
+
+p.values_inter3 <- list(summary(model_inter3)$coefficients[,4])
+
 ```
 
 ```{r}
 #Plotting interaction models
 
-stargazer(model_educ, model_wealth,model_marital,model_inter,model_inter, coef = list(OR.vector_educ, OR.vector_w, OR.vector_marital, OR.vector_inter, OR.vector_inter2), 
-          title = "Table 4. Logistic regression estimates school dropouts and independent variables, estimates in odd ratios",
+stargazer(model_inter,model_inter2, model_inter3, coef = list(OR.vector_inter, OR.vector_inter2, OR.vector_inter3), 
+          title = "Table 5. Logistic regression estimates interaction models, estimates in odd ratios",
           dep.var.labels = "School dropouts",
           notes= c("Rereference category Educ head: No education. Reference category Wealth status: Poorest. Reference category Marital status: Married.Reference category interaction 1: Higher-Married. Reference category interaction 2: Higher-Richest. Reference category Gender: Male. Reference category type of residence: Urban.Reference category Region: Atlantic. Source: DHS Colombia 2015, own estimates"),
-           covariate.labels = c("Educ head-Primary",
-                      "Educ head-Secondary",
-                      "Educ head-Higher",
+          covariate.labels = c(
                       "Gender-Female",
                       "Type residence-Rural",
-                               "Region-Oriental",
-                               "Region-Bogota",
-                               "Region-Central",
-                               "Region-Pacific",
-                               "Region-Amazonia",
-                        "Wealth status-Poor",
+                               "Age 14",
+                               "Age 15",
+                               "Age 16",
+                      "Wealth status-Poor",
                       "Wealth status-Middle",
                       "Wealth status-Rich",
                       "Wealth status-Richest",
-   "Marital status-Living with partner",
-                               "Marital status-Single",
-                               "Marital stauts-Other",
-   "Low education-Married",
-   "Low education-Living with partner",
-   "Low education-Single",
-   "Low education-Other",
-   "Secondary-Married",
-   "Secondary-Living with partner",
-   "Secondary-Single",
-   "Secondary-Other",
-   "Higher-Living with partner",
-   "Higher-Single",
-   "Higher-Other",
-   "Low education-Poorest",
-   "Low education-Poor",
-   "Low education-Middle",
-   "Low education-Rich",
-   "Low education-Richest",
-   "Secondary-Poorest",
-   "Secondary-Poor",
-   "Secondary-Middle",
-   "Secondary-Rich",
-   "Secondary-Richest",
-   "Higher-Poorest",
-   "Higher-Poor",
-   "Higher-Middle",
-   "Higher-Rich"),
+                      "Low education-Married",
+                      "Low education-Living with partner",
+                      "Low education-Single",
+                      "Low education-Other",
+                      "Secondary-Married",
+                      "Secondary-Living with partner",
+                      "Secondary-Single",
+                      "Secondary-Other",
+                      "High education-Living with partner",
+                      "High education-Single",
+                      "High education-Other",
+                      "Marital status-Living with partner",
+                      "Marital status-Single",
+                      "Marital status-Other",
+                      "Low education-Poorest",
+                      "Low education-Poor",
+                      "Low education-Middle",
+                      "Low education-Rich",
+                      "Low education-Richest",
+                      "Secondary-Poorest",
+                      "Secondary-Poor",
+                      "Secondary-Middle",
+                      "Secondary-Rich",
+                      "Secondary-Richest",
+                      "Higher-Poorest",
+                      "Higher-Poor",
+                      "Higher-Middle",
+                      "Higher-Rich"),
+          
           ci = T,
-ci.custom = list(CI.vector_educ, CI.vector_w, CI.vector_marital, CI.vector_inter, CI.vector_inter2), single.row = F, type = "text", out = "models.htm",
+ci.custom = list(CI.vector_inter, CI.vector_inter2, CI.vector_inter3), single.row = F, type = "text", out = "models2.htm",
 p=
-c(p.values_educ, p.values_w, p.values_marital, p.values_inter, p.values_inter2))
+c(p.values_inter, p.values_inter2, p.values_inter3))
 ```
 
-
-
-
-
-
 ```{r}
-#Plotting predicted probabilities
+#Plotting predicted probabilities interaction 1 
 
-model_interaction <- glm(dropouts ~ gender + resi + region + wealth + educ:mom_marital, data = final_data, family = "binomial")
+#Grouping levels of educ head of household
+
+final_data$educ <- final_data$educ_head
+
+levels(final_data$educ)
+
+final_data$educ <- fct_collapse(final_data$educ,
+                                    "1-Low education" = c("0-No education", "1-Primary"),
+                                    "2-Secondary" = c("2-Secondary"),
+                                    "3-Higher" = c("3-Separated")) 
+
+#Creating mom marital status without other category
+
+final_data$mom <- final_data$mom_marital
+final_data$mom[final_data$mom_marital == "4-Other"] <- "NA"
+
+summary(final_data$mom)
+
+model_interaction <- glm(dropouts ~ gender + resi + age + wealth + educ:mom, data = final_data, family = "binomial")
 
 probs <- ggpredict(model_interaction, 
-                   terms = c("mom_marital", "educ"))
+                   terms = c("mom", "educ"))
 
 probs %>% 
       as_data_frame() %>% 
@@ -268,6 +300,7 @@ probs %>%
                   width = .1,
                   position = position_dodge(width = 0.2)) +
   theme_minimal() +
+  scale_color_brewer(palette="Dark2") +
   labs(title = "Figure 1. Predicted probabilities of dropouts by mothers´ marital status and level of education head of household",
        x = "Mothers´ marital status",
        y= "Probability of dropout",
@@ -277,10 +310,12 @@ probs %>%
 ```
 
 ```{r}
-model_interaction2 <- glm(dropouts ~ gender + region + wealth + mom_marital + educ:wealth, data = final_data, family = "binomial")
+#Plotting predicted probabilities interaction 1 without wealth
+
+model_interaction2 <- glm(dropouts ~ gender + resi + age + educ:mom, data = final_data, family = "binomial")
 
 probs2 <- ggpredict(model_interaction2, 
-                   terms = c("wealth", "educ"))
+                   terms = c("mom", "educ"))
 
 probs2 %>% 
       as_data_frame() %>% 
@@ -293,43 +328,39 @@ probs2 %>%
                   width = .1,
                   position = position_dodge(width = 0.2)) +
   theme_minimal() +
-  labs(title = "Figure 2. Predicted probabilities of dropouts by socioeconomic status and level of education head of household",
+  scale_color_brewer(palette="Dark2") +
+  labs(title = "Figure 2. Predicted probabilities of dropouts by mothers´ marital status and level of education head of household without wealth status",
+       x = "Mothers´ marital status",
+       y= "Probability of dropout",
+       colour = "Level of education head of household",
+       caption = "Source: DHS Colombia 2015, own estimates")
+                      
+```
+
+```{r}
+model_interaction3 <- glm(dropouts ~ gender + region + wealth + mom_marital + educ:wealth, data = final_data, family = "binomial")
+
+probs3 <- ggpredict(model_interaction3, 
+                   terms = c("wealth", "educ"))
+
+probs3 %>% 
+      as_data_frame() %>% 
+    ggplot(aes(x, predicted)) + 
+    geom_point(aes(color = group),
+               position = position_dodge(width = 0.2)) +
+    geom_errorbar(aes(ymin = conf.low, 
+                      ymax = conf.high, 
+                      color = group), 
+                  width = .1,
+                  position = position_dodge(width = 0.2)) +
+  theme_minimal() +
+  scale_color_brewer(palette="Dark2") +
+  labs(title = "Figure 3. Predicted probabilities of dropouts by socioeconomic status and level of education head of household",
        x = "Wealth status",
        y= "Probability of dropout",
        colour = "Level of education head of household",
        caption = "Source: DHS Colombia 2015, own estimates")
 ```
-```{r}
-table(final_data$educ_head,final_data$mom_marital)
-
-table(final_data$educ_head,final_data$wealth)
-```
-```{r}
-#Experiment grouping levels of the level of educ head of household
-
-final_data$educ <- final_data$educ_head
-
-levels(final_data$educ)
-
-final_data$educ <- fct_collapse(final_data$educ,
-                                    "1-Low education" = c("0-No education", "1-Primary"),
-                                    "2-Secondary" = c("2-Secondary"),
-                                    "3-Higher" = c("3-Separated")) 
 
 
-#Creating new interaction variable
-
-final_data$inter3 <- final_data$educ: final_data$mom_marital
-
-levels(final_data$inter3)
-
-final_data$inter3 <- relevel(final_data$inter3, ref="3-Higher:1-Married")
-
-model_inter3 <- glm(dropouts ~ gender + resi + region + wealth + inter3, data = final_data, family = "binomial")
-
-summary(model_inter3)
-
-exp(coef(model_inter3))
-
-```
 
